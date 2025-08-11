@@ -1,4 +1,4 @@
-import { NotFoundError, requireAuth } from '@jjmauction/common';
+import { NotFoundError, requireAuth } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 
 import { Profile } from '../models';

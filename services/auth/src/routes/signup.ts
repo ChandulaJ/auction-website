@@ -1,4 +1,4 @@
-import { BadRequestError, validateRequest } from '@jjmauction/common';
+import { BadRequestError, validateRequest } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import gravatar from 'gravatar';

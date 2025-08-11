@@ -1,4 +1,4 @@
-import { ListingStatus, requireAuth } from '@jjmauction/common';
+import { ListingStatus, requireAuth } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 import { Op } from 'sequelize';
 

@@ -1,4 +1,4 @@
-import { ListingStatus } from '@jjmauction/common';
+import { ListingStatus } from '@auction-platform/common';
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 

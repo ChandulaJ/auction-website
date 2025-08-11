@@ -3,7 +3,7 @@ import {
   ListingDeletedEvent,
   NotFoundError,
   Subjects,
-} from '@jjmauction/common';
+} from '@auction-platform/common';
 import { Message } from 'node-nats-streaming';
 
 import { Bid, Listing, db } from '../../models';

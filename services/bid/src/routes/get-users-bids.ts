@@ -1,4 +1,4 @@
-import { requireAuth } from '@jjmauction/common';
+import { requireAuth } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 
 import { Bid } from '../models';

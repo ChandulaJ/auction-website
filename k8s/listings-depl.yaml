@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: listings
-          image: cloudWebApp1234/auction-website-listings
+          image: cloudWebApp/auction-website-listings
           env:
             - name: JWT_KEY
               valueFrom:

@@ -4,7 +4,7 @@ import {
   NotFoundError,
   requireAuth,
   validateRequest,
-} from '@jjmauction/common';
+} from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 
 import { BidCreatedPublisher } from '../events/publishers/bid-created-publisher';

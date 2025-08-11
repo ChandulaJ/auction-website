@@ -1,4 +1,4 @@
-import { NotFoundError } from '@jjmauction/common';
+import { NotFoundError } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 import { Sequelize } from 'sequelize';
 

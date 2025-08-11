@@ -1,4 +1,4 @@
-import { ListingStatus, ListingUpdatedEvent } from '@jjmauction/common';
+import { ListingStatus, ListingUpdatedEvent } from '@auction-platform/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ListingUpdatedListener } from '../../../src/events/listeners/listing-updated-listener';

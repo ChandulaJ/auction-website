@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: cloudWebApp1234/auction-website-auth
+          image: cloudWebApp/auction-website-auth
           env:
             - name: JWT_KEY
               valueFrom:

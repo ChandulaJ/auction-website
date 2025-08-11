@@ -1,4 +1,4 @@
-import { UserCreatedEvent } from '@jjmauction/common';
+import { UserCreatedEvent } from '@auction-platform/common';
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 

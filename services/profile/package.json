@@ -13,7 +13,7 @@
     "coverage": "cross-env NODE_ENV=test jest --coverage"
   },
   "dependencies": {
-    "@jjmauction/common": "^1.0.13",
+    "@auction-platform/common": "^1.0.13",
     "cookie-session": "^1.4.0",
     "cross-env": "^7.0.3",
     "express": "^4.17.1",

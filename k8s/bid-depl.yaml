@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: bid
-          image: cloudWebApp1234/auction-website-bid
+          image: cloudWebApp/auction-website-bid
           env:
             - name: JWT_KEY
               valueFrom:

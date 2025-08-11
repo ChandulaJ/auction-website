@@ -4,7 +4,7 @@ import {
   NotAuthorizedError,
   NotFoundError,
   requireAuth,
-} from '@jjmauction/common';
+} from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 import { Op } from 'sequelize';
 

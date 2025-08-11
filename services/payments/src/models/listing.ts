@@ -1,4 +1,4 @@
-import { ListingStatus } from '@jjmauction/common';
+import { ListingStatus } from '@auction-platform/common';
 import { BuildOptions, DataTypes, Model, Sequelize, UUIDV4 } from 'sequelize';
 
 export interface ListingAttributes {

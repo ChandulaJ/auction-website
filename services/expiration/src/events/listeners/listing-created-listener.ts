@@ -1,4 +1,4 @@
-import { Listener, ListingCreatedEvent, Subjects } from '@jjmauction/common';
+import { Listener, ListingCreatedEvent, Subjects } from '@auction-platform/common';
 import { Message } from 'node-nats-streaming';
 
 import { expirationQueue } from '../../queues/expiration-queue';

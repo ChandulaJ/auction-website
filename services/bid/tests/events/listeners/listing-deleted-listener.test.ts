@@ -1,4 +1,4 @@
-import { ListingDeletedEvent, ListingStatus } from '@jjmauction/common';
+import { ListingDeletedEvent, ListingStatus } from '@auction-platform/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ListingDeletedListener } from '../../../src/events/listeners/listing-deleted-listener';

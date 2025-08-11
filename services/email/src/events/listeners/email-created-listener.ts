@@ -1,4 +1,4 @@
-import { EmailCreatedEvent, Listener, Subjects } from '@jjmauction/common';
+import { EmailCreatedEvent, Listener, Subjects } from '@auction-platform/common';
 import { Message } from 'node-nats-streaming';
 import nodemailer from 'nodemailer';
 

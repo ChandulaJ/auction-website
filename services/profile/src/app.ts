@@ -1,6 +1,6 @@
 import 'express-async-errors';
 
-import { NotFoundError, currentUser, errorHandler } from '@jjmauction/common';
+import { NotFoundError, currentUser, errorHandler } from '@auction-platform/common';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import express from 'express';

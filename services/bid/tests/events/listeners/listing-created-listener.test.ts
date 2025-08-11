@@ -1,4 +1,4 @@
-import { ListingCreatedEvent } from '@jjmauction/common';
+import { ListingCreatedEvent } from '@auction-platform/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ListingCreatedListener } from '../../../src/events/listeners/listing-created-listener';

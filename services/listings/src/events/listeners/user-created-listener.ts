@@ -1,4 +1,4 @@
-import { Listener, Subjects, UserCreatedEvent } from '@jjmauction/common';
+import { Listener, Subjects, UserCreatedEvent } from '@auction-platform/common';
 import { Message } from 'node-nats-streaming';
 import { User } from '../../models';
 

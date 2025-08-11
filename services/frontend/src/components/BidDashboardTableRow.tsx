@@ -1,4 +1,4 @@
-import { ListingStatus } from '@jjmauction/common';
+import { ListingStatus } from '@auction-platform/common';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useContext } from 'react';

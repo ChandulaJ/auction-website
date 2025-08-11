@@ -1,4 +1,4 @@
-import { currentUser } from '@jjmauction/common';
+import { currentUser } from '@auction-platform/common';
 import express, { Request, Response } from 'express';
 
 const router = express.Router();

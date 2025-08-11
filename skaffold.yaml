@@ -4,7 +4,7 @@ build:
   local:
     push: false
   artifacts:
-    - image: cloudWebApp1234/auction-website-auth
+    - image: cloudWebApp/auction-website-auth
       context: services/auth
       docker:
         dockerfile: Dockerfile.dev
@@ -12,7 +12,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-listings
+    - image: cloudWebApp/auction-website-listings
       context: services/listings
       docker:
         dockerfile: Dockerfile.dev
@@ -20,7 +20,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-bid
+    - image: cloudWebApp/auction-website-bid
       context: services/bid
       docker:
         dockerfile: Dockerfile.dev
@@ -28,7 +28,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-expiration
+    - image: cloudWebApp/auction-website-expiration
       context: services/expiration
       docker:
         dockerfile: Dockerfile.dev
@@ -36,7 +36,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-profile
+    - image: cloudWebApp/auction-website-profile
       context: services/profile
       docker:
         dockerfile: Dockerfile.dev
@@ -44,7 +44,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-frontend
+    - image: cloudWebApp/auction-website-frontend
       context: services/frontend
       docker:
         dockerfile: Dockerfile.dev
@@ -52,7 +52,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: cloudWebApp1234/auction-website-email
+    - image: cloudWebApp/auction-website-email
       context: services/email
       docker:
         dockerfile: Dockerfile.dev
@@ -61,7 +61,7 @@ build:
           - '**/*.tsx'
           - '**/*.ts'
           - '**/*.js'
-    - image: cloudWebApp1234/auction-website-payments
+    - image: cloudWebApp/auction-website-payments
       context: services/payments
       docker:
         dockerfile: Dockerfile.dev

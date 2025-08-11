@@ -1,4 +1,4 @@
-import { ListingDeletedEvent, Publisher, Subjects } from '@jjmauction/common';
+import { ListingDeletedEvent, Publisher, Subjects } from '@auction-platform/common';
 
 export class ListingDeletedPublisher extends Publisher<ListingDeletedEvent> {
   subject: Subjects.ListingDeleted = Subjects.ListingDeleted;

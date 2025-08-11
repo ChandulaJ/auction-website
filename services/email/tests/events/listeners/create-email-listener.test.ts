@@ -1,4 +1,4 @@
-import { EmailCreatedEvent } from '@jjmauction/common';
+import { EmailCreatedEvent } from '@auction-platform/common';
 
 import { EmailCreatedListener } from '../../../src/events/listeners/email-created-listener';
 import { natsWrapper } from '../../../src/nats-wrapper';
