@@ -1,0 +1,222 @@
+version: '3.8'
+services:
+  # NATS Streaming
+  nats:
+    image: nats:2.9-alpine
+    ports:
+      - "4222:4222"
+    command: ["-js"]
+
+  # Redis for expiration service
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # MySQL for each service
+  auth-mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth
+    ports:
+      - "3307:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+
+  bid-mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bid
+    ports:
+      - "3308:3306"
+    volumes:
+      - bid-mysql-data:/var/lib/mysql
+
+  listings-mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: listings
+    ports:
+      - "3309:3306"
+    volumes:
+      - listings-mysql-data:/var/lib/mysql
+
+  payments-mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: payments
+    ports:
+      - "3310:3306"
+    volumes:
+      - payments-mysql-data:/var/lib/mysql
+
+  profile-mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: profile
+    ports:
+      - "3311:3306"
+    volumes:
+      - profile-mysql-data:/var/lib/mysql
+
+  # Auth Service
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=auth-mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=auth
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=auth
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - auth-mysql
+      - nats
+    ports:
+      - "3001:3000"
+
+  # Bid Service
+  bid:
+    build:
+      context: ./services/bid
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=bid-mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=bid
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=bid
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - bid-mysql
+      - nats
+    ports:
+      - "3002:3000"
+
+  # Listings Service
+  listings:
+    build:
+      context: ./services/listings
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=listings-mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=listings
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=listings
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - listings-mysql
+      - nats
+    ports:
+      - "3003:3000"
+
+  # Payments Service
+  payments:
+    build:
+      context: ./services/payments
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=payments-mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=payments
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=payments
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - payments-mysql
+      - nats
+    ports:
+      - "3004:3000"
+
+  # Profile Service
+  profile:
+    build:
+      context: ./services/profile
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=profile-mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=profile
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=profile
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - profile-mysql
+      - nats
+    ports:
+      - "3005:3000"
+
+  # Email Service
+  email:
+    build:
+      context: ./services/email
+      dockerfile: Dockerfile
+    environment:
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=email
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - nats
+    ports:
+      - "3006:3000"
+
+  # Expiration Service
+  expiration:
+    build:
+      context: ./services/expiration
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - JWT_KEY=your_jwt_secret
+      - NATS_CLIENT_ID=expiration
+      - NATS_URL=nats://nats:4222
+      - NATS_CLUSTER_ID=auction
+    depends_on:
+      - redis
+      - nats
+    ports:
+      - "3007:3000"
+
+  # Frontend
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - auth
+      - bid
+      - listings
+      - payments
+      - profile
+      - email
+      - expiration
+    ports:
+      - "3000:3000"
+
+volumes:
+  auth-mysql-data:
+  bid-mysql-data:
+  listings-mysql-data:
+  payments-mysql-data:
+  profile-mysql-data:
