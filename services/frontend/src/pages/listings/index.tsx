@@ -1,19 +1,19 @@
 import styled from '@emotion/styled';
 import Head from 'next/head';
 import React from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 import Breadcrumb from '../../components/Breadcrumb';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListingCard from '../../components/ListingCard';
 
-const StyledListings = styled.div(xw`
+const StyledListings = styled.div`${tw`
 	py-3
 	flex 
 	flex-wrap 
 	-mx-2 
 	-mb-4
-`);
+`}`;
 
 const Listings = ({ listings, search }) => {
   return (

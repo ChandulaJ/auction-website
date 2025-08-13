@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Router from 'next/router';
 import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 import * as Yup from 'yup';
 
 import Breadcrumb from '../components/Breadcrumb';
@@ -15,11 +15,11 @@ import Error from '../components/ErrorMessage';
 import ImageUpload from '../components/ImageUpload';
 import AppContext from '../context/app-context';
 
-const StyledErrorMessage = styled.div(xw`
+const StyledErrorMessage = styled.div`${tw`
     text-sm
     text-red-600
     my-0.5
-`);
+`}`;
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -58,7 +58,7 @@ const Sell = () => {
       Object.keys(body).forEach((key) => formData.append(key, body[key]));
       const { data } = await axios.post('/api/listings', formData);
       toast.success('Sucessfully listed item for sale!');
-      Router.push(`/listings/${data.slug}`);
+      Router.push(`/listings/${data.slug}`}`;
     } catch (err) {
       err.response.data.errors.forEach((err) => toast.error(err.message));
     }

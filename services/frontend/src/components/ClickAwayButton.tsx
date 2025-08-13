@@ -1,18 +1,13 @@
 import styled from '@emotion/styled';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 interface IProps {
   onClickAway(): void;
 }
 
-const StyledClickAwayButton = styled.button(xw`
-    fixed
-    inset-0 
-    h-full 
-    w-full 
-    cursor-default
-    outline-none
-`);
+const StyledClickAwayButton = styled.button`
+  ${tw`fixed inset-0 h-full w-full cursor-default outline-none`}
+`;
 
 const ClickAwayButton = ({ onClickAway }: IProps) => {
   return (

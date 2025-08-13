@@ -1,16 +1,16 @@
 import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 import ClickAwayButton from './ClickAwayButton';
 import NotificationsIcon from './NotificationsIcon';
 
-const StyledNotificationsBell = styled.div(xw`
+const StyledNotificationsBell = styled.div`${tw`
 	relative 
 	flex-shrink-0
-`);
+`}`;
 
-const StyledButton = styled.button(xw`
+const StyledButton = styled.button`${tw`
 	flex-shrink-0 
 	bg-white 
 	p-1 
@@ -21,13 +21,13 @@ const StyledButton = styled.button(xw`
 	focus:ring-2 
 	focus:ring-offset-2 
 	focus:ring-indigo-500
-`);
+`}`;
 
-const StyledLabel = styled.label(xw`
+const StyledLabel = styled.label`${tw`
 	sr-only
-`);
+`}`;
 
-const StyledNotificationsContent = styled.div(xw`
+const StyledNotificationsContent = styled.div`${tw`
 	origin-top-right 
 	absolute 
 	right-0 
@@ -41,15 +41,11 @@ const StyledNotificationsContent = styled.div(xw`
 	ring-black 
 	ring-opacity-5 
 	z-50
-`);
+`}`;
 
-const StyledText = styled.h1(xw`
-	block 
-	px-4 
-	py-2 
-	text-sm 
-	text-gray-700
-`);
+const StyledText = styled.h1`
+	${tw`block px-4 py-2 text-sm text-gray-700`}
+`;
 
 const NotificationsBell = () => {
   const [showNotifications, setShowNotifications] = useState(false);

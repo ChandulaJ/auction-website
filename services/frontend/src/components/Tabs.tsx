@@ -1,16 +1,16 @@
 import styled from '@emotion/styled';
 import { FunctionComponent } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
-const StyledTabs = styled.div(xw`
+const StyledTabs = styled.div`${tw`
     border-b 
     border-gray-200
-`);
+`}`;
 
-const StyledTabsNav = styled.nav(xw`
+const StyledTabsNav = styled.nav`${tw`
     flex 
     space-x-8
-`);
+`}`;
 
 const Tabs: FunctionComponent = ({ children }) => {
   return (

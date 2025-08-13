@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import React from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 import StyledSvg from '../styles/StyledSvg';
 
@@ -9,30 +9,30 @@ interface IProps {
   children: JSX.Element[];
 }
 
-const StyledBreadcrumbs = styled.nav(xw`
+const StyledBreadcrumbs = styled.nav`${tw`
     flex
     pt-3
-`);
+`}`;
 
-const StyledOrderedList = styled.ol(xw`
+const StyledOrderedList = styled.ol`${tw`
     flex 
     items-center 
     space-x-4
-`);
+`}`;
 
-const StyledBreadcrumbContainer = styled.div(xw`
+const StyledBreadcrumbContainer = styled.div`${tw`
     flex 
     items-center
-`);
+`}`;
 
-const StyledAnchorTag = styled.a(xw`
+const StyledAnchorTag = styled.a`${tw`
     text-gray-400 
     hover:text-gray-500
-`);
+`}`;
 
-const StyledSpan = styled.span(xw`
+const StyledSpan = styled.span`${tw`
     sr-only
-`);
+`}`;
 
 const Breadcrumbs = ({ children }: IProps) => {
   return (

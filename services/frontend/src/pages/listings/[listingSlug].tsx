@@ -7,7 +7,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import io from 'socket.io-client';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 import * as Yup from 'yup';
 
 import Breadcrumb from '../../components/Breadcrumb';
@@ -16,66 +16,66 @@ import Countdown from '../../components/Countdown';
 import Error from '../../components/ErrorMessage';
 import { centsToDollars } from '../../utils/cents-to-dollars';
 
-const StyledListing = styled.div(xw`
+const StyledListing = styled.div`${tw`
 	flex 
 	flex-wrap 
 	-mx-8 
-`);
+`}`;
 
-const StyledTextContent = styled.div(xw`
+const StyledTextContent = styled.div`${tw`
 	lg:w-1/2 
 	px-8 
 	lg:mt-0 
   w-full
 	order-2 
 	lg:order-none
-`);
+`}`;
 
-const StyledTable = styled.table(xw`
+const StyledTable = styled.table`${tw`
 	w-full 
 	mb-6
-`);
+`}`;
 
-const StyledTableRow = styled.tr(xw`
+const StyledTableRow = styled.tr`${tw`
 	border-t
-`);
+`}`;
 
-const StyledTableRowName = styled.td(xw`
+const StyledTableRowName = styled.td`${tw`
 	py-3 
 	font-medium 
 	text-gray-700
-`);
+`}`;
 
-const StyledTableRowValue = styled.td(xw`
+const StyledTableRowValue = styled.td`${tw`
 	text-right 
 	max-w-2xl 
 	text-gray-500
-`);
+`}`;
 
-const StyledAnchorTableRowValue = styled.td(xw`
+const StyledAnchorTableRowValue = styled.td`${tw`
 	text-right 
 	max-w-2xl 
   hover:underline
   cursor-pointer
 	text-gray-500
-`);
+`}`;
 
-const StyledImgContainer = styled.div(xw`
+const StyledImgContainer = styled.div`${tw`
 	lg:w-1/2 
 	px-8
-`);
+`}`;
 
-const StyledImg = styled.img(xw`
+const StyledImg = styled.img`${tw`
 	mb-4 
 	rounded 
 	shadow
-`);
+`}`;
 
-const StyledErrorMessage = styled.div(xw`
+const StyledErrorMessage = styled.div`${tw`
     text-sm
     text-red-600
     my-0.5
-`);
+`}`;
 
 const Listing = ({ listingData }) => {
   const [listing, setListing] = useState(listingData);
@@ -229,7 +229,7 @@ const Listing = ({ listingData }) => {
 Listing.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
     const { listingSlug } = context.query;
-    const { data } = await client.get(`/api/listings/${listingSlug}`);
+    const { data } = await client.get(`/api/listings/${listingSlug}`}`;
     return { listingData: data };
   } catch (err) {
     console.error(err);

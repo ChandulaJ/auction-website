@@ -6,19 +6,16 @@ import styled from '@emotion/styled';
 import type { AppProps } from 'next/app';
 import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 import buildClient from '../api/base-client';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import AppContext from '../context/app-context';
 
-const StyledMyApp = styled.div(xw`
-    flex 
-    flex-col 
-    h-screen 
-    justify-between
-`);
+const StyledMyApp = styled.div`
+    ${tw`flex flex-col h-screen justify-between`}
+`;
 
 interface IProps extends AppProps {
   currentUser: any;

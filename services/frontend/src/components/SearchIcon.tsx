@@ -1,21 +1,21 @@
 import styled from '@emotion/styled';
 import { FunctionComponent } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
-const StyledSearchIcon = styled.div(xw`
+const StyledSearchIcon = styled.div`${tw`
 	absolute 
 	inset-y-0 
 	left-0 
 	pl-3 flex 
 	items-center 
 	pointer-events-none
-`);
+`}`;
 
-const StyledIcon = styled.svg(xw`
+const StyledIcon = styled.svg`${tw`
 	h-5 
 	w-5 
 	text-gray-400	
-`);
+`}`;
 
 const SearchIcon: FunctionComponent = () => {
   return (

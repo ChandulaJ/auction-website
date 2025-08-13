@@ -1,24 +1,24 @@
 import styled from '@emotion/styled';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
-const StyledLogo = styled.div(xw`
+const StyledLogo = styled.div`${tw`
 	flex-shrink-0 
 	flex items-center
-`);
+`}`;
 
-const StyledMobileLogo = styled.img(xw`
+const StyledMobileLogo = styled.img`${tw`
 	block 
 	lg:hidden 
 	h-8 
 	w-auto
-`);
+`}`;
 
-const StyledDesktopLogo = styled.img(xw`
+const StyledDesktopLogo = styled.img`${tw`
 	hidden 
 	lg:block 
 	h-8 
 	w-auto
-`);
+`}`;
 
 const Logo = () => {
   return (
