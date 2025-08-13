@@ -40,7 +40,9 @@ const ImageUpload = (props) => {
     isDragReject,
     acceptedFiles,
   } = useDropzone({
-    accept: 'image/*',
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+    },
     onDrop: (acceptedFiles) => {
       setFieldValue('image', acceptedFiles[0]);
     },

@@ -1,22 +1,17 @@
-FROM node:16-alpine
+FROM node:18-alpine
 ENV CI=true
-
 WORKDIR /app
 
-# Copy and build the common package first
-COPY ../../common ./common
-WORKDIR /app/common
-RUN npm install && npm run build
+# Copy the package.json and package-lock.json for better dependency resolution
+COPY package.json package-lock.json ./
 
-# Now work on the frontend
-WORKDIR /app/frontend
-COPY package*.json ./
-RUN npm cache clean --force && npm install
+# Install only production dependencies
+RUN rm -rf node_modules package-lock.json && \
+    npm install --only=production --no-audit --no-fund && \
+    npm cache clean --force
 
-# Copy frontend source
-COPY . .
-
-# Build the frontend
-RUN npm run build
+# Copy the built application from local build
+COPY .next ./.next
+COPY public ./public
 
 CMD ["npm", "run", "start"]

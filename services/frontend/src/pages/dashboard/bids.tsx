@@ -18,7 +18,7 @@ const Bids = ({ bidsData }) => {
 
   const onDelete = async (bidId) => {
     try {
-      await axios.delete(`/api/bids/${bidId}`}`;
+      await axios.delete(`/api/bids/${bidId}`);
       setBids(bids.filter((bid) => bid.id !== bidId));
       toast.success('Sucessfully  deleted bid!');
     } catch (err) {
@@ -118,7 +118,7 @@ const Bids = ({ bidsData }) => {
 
 Bids.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
-    const { data } = await client.get(`/api/bids`}`;
+    const { data } = await client.get(`/api/bids`);
     return { bidsData: data };
   } catch (err) {
     console.error(err);

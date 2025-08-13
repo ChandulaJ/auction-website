@@ -87,7 +87,7 @@ const Listing = ({ listingData }) => {
 
     const socket = io('/socket', {
       secure: false,
-      query: `r_var=${room}`,
+      query: { r_var: room },
     });
 
     socket.emit('join');
@@ -104,7 +104,10 @@ const Listing = ({ listingData }) => {
       setListing(data);
     });
 
-    return () => socket.emit('unsubscribe', room);
+    return () => {
+      socket.emit('unsubscribe', room);
+      socket.disconnect();
+    };
   }, []);
 
   const onSubmit = async (body) => {
@@ -229,7 +232,7 @@ const Listing = ({ listingData }) => {
 Listing.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
     const { listingSlug } = context.query;
-    const { data } = await client.get(`/api/listings/${listingSlug}`}`;
+    const { data } = await client.get(`/api/listings/${listingSlug}`);
     return { listingData: data };
   } catch (err) {
     console.error(err);

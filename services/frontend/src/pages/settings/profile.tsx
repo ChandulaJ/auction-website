@@ -216,7 +216,7 @@ const Profile = ({ profileData }) => {
 
 Profile.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
-    const { data } = await client.get(`/api/profile`}`;
+    const { data } = await client.get(`/api/profile`);
     return { profileData: data };
   } catch (err) {
     console.error(err);

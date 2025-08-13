@@ -18,7 +18,7 @@ const Sold = ({ listingsData }) => {
 
   const onDelete = async (listingId) => {
     try {
-      await axios.delete(`/api/listings/${listingId}`}`;
+      await axios.delete(`/api/listings/${listingId}`);
       setListings(listings.filter((listing) => listing.id !== listingId));
       toast.success('Sucessfully deleted listing!');
     } catch (err) {
@@ -120,7 +120,7 @@ const Sold = ({ listingsData }) => {
 
 Sold.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
-    const { data } = await client.get(`/api/listings/sold`}`;
+    const { data } = await client.get(`/api/listings/sold`);
     return { listingsData: data };
   } catch (err) {
     console.error(err);

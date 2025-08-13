@@ -14,7 +14,7 @@ spec:
         app: auth-mysql
     spec:
       containers:
-        - image: mysql:5.7
+        - image: mysql:8.0
           name: auth-mysql
           env:
             - name: MYSQL_ROOT_PASSWORD
@@ -22,6 +22,8 @@ spec:
                 secretKeyRef:
                   name: mysql-root-password-secret
                   key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_ROOT_HOST
+              value: "%"
           ports:
             - containerPort: 3306
               name: mysql

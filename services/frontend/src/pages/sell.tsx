@@ -58,7 +58,7 @@ const Sell = () => {
       Object.keys(body).forEach((key) => formData.append(key, body[key]));
       const { data } = await axios.post('/api/listings', formData);
       toast.success('Sucessfully listed item for sale!');
-      Router.push(`/listings/${data.slug}`}`;
+      Router.push(`/listings/${data.slug}`);
     } catch (err) {
       err.response.data.errors.forEach((err) => toast.error(err.message));
     }

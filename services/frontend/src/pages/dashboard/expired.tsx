@@ -18,7 +18,7 @@ const Expired = ({ listingsData }) => {
 
   const onDelete = async (listingId) => {
     try {
-      await axios.delete(`/api/listings/${listingId}`}`;
+      await axios.delete(`/api/listings/${listingId}`);
       setListings(listings.filter((listing) => listing.id !== listingId));
       toast.success('Sucessfully deleted listing!');
     } catch (err) {
@@ -96,12 +96,13 @@ const Expired = ({ listingsData }) => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {listings.map((listing) => {
+                    {listings.map((listing) => (
                       <ListingDashboardTableRow
+                        key={listing.id}
                         listing={listing}
                         onDelete={() => onDelete(listing.id)}
-                      />;
-                    })}
+                      />
+                    ))}
                     {!listings.length && (
                       <p className="m-4 max-w-2xl text-l">
                         You have no expired listings.
@@ -120,7 +121,7 @@ const Expired = ({ listingsData }) => {
 
 Expired.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
-    const { data } = await client.get(`/api/listings/expired`}`;
+    const { data } = await client.get(`/api/listings/expired`);
     return { listingsData: data };
   } catch (err) {
     console.error(err);
