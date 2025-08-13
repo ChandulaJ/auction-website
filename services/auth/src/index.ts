@@ -36,8 +36,9 @@ import { natsWrapper } from './nats-wrapper';
     db.sync();
     console.log('Conneted to MySQL');
 
-    await app.listen(3000);
-    console.log('Listening on port 3000!');
+    const port = process.env.PORT || 3001;
+    await app.listen(port);
+    console.log(`Listening on port ${port}!`);
 
     console.log('The auth service has started up successfully');
   } catch (err) {
