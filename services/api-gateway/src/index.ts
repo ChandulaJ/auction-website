@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import axios from 'axios';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -65,32 +65,20 @@ class ApiGateway {
       });
     });
 
-    // Setup service proxies
+    // Setup service proxies using axios
     Object.entries(config.services).forEach(([serviceName, serviceConfig]) => {
       serviceConfig.paths.forEach(path => {
         console.log(`🔗 Proxying ${path}/* → ${serviceConfig.url}`);
         
-        this.app.use(path, createProxyMiddleware({
-          target: serviceConfig.url,
-          changeOrigin: config.proxy.changeOrigin,
-          timeout: config.proxy.timeout,
-          logLevel: config.proxy.logLevel as any,
-          onError: (err: Error, req: Request, res: Response) => {
-            console.error(`❌ Proxy Error for ${serviceName}:`, err.message);
-            res.status(503).json({
-              error: 'Service Unavailable',
-              message: `${serviceName} service is currently unavailable`,
-              path: req.path,
-              timestamp: new Date().toISOString()
-            });
-          },
-          onProxyReq: (proxyReq, req: Request, res: Response) => {
-            console.log(`📡 Proxying ${req.method} ${req.path} → ${serviceName}`);
-          },
-          onProxyRes: (proxyRes, req: Request, res: Response) => {
-            console.log(`📨 Response from ${serviceName}: ${proxyRes.statusCode}`);
-          }
-        }));
+        // Handle exact path match (e.g., /api/listings)
+        this.app.all(path, async (req: Request, res: Response) => {
+          await this.proxyRequest(req, res, serviceConfig.url, serviceName);
+        });
+        
+        // Handle wildcard path match (e.g., /api/listings/*)
+        this.app.all(`${path}/*`, async (req: Request, res: Response) => {
+          await this.proxyRequest(req, res, serviceConfig.url, serviceName);
+        });
       });
     });
 
@@ -103,6 +91,76 @@ class ApiGateway {
         timestamp: new Date().toISOString()
       });
     });
+  }
+
+  private async proxyRequest(req: Request, res: Response, targetUrl: string, serviceName: string): Promise<void> {
+    try {
+      console.log(`📡 Proxying ${req.method} ${req.originalUrl} → ${serviceName}`);
+      
+      const fullTargetUrl = `${targetUrl}${req.originalUrl}`;
+      console.log(`📤 Forwarding to: ${fullTargetUrl}`);
+      
+      const axiosConfig: any = {
+        method: req.method.toLowerCase(),
+        url: fullTargetUrl,
+        headers: {
+          'Content-Type': req.headers['content-type'] || 'application/json',
+          'User-Agent': req.headers['user-agent'] || 'api-gateway',
+          'Accept': req.headers['accept'] || '*/*',
+          'Cookie': req.headers['cookie'] || ''
+        },
+        timeout: config.proxy.timeout,
+        validateStatus: () => true // Don't throw errors for HTTP error status codes
+      };
+
+      // Add body for non-GET requests
+      if (req.method !== 'GET' && req.body) {
+        axiosConfig.data = req.body;
+      }
+
+      // Add query parameters
+      if (req.query && Object.keys(req.query).length > 0) {
+        axiosConfig.params = req.query;
+      }
+
+      const response = await axios(axiosConfig);
+      
+      console.log(`📥 Response from ${serviceName}: ${response.status}`);
+      
+      // Forward response headers
+      Object.keys(response.headers).forEach(header => {
+        if (header.toLowerCase() !== 'content-encoding') {
+          res.set(header, response.headers[header]);
+        }
+      });
+      
+      res.status(response.status).json(response.data);
+      
+    } catch (error: any) {
+      console.error(`❌ Proxy Error for ${serviceName}:`, error.message);
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.log(`❌ Error status: ${error.response.status}`);
+        res.status(error.response.status).json(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log(`❌ No response from ${serviceName}`);
+        res.status(503).json({
+          error: 'Service Unavailable',
+          message: `${serviceName} service is currently unavailable`,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        // Something happened in setting up the request
+        console.log(`❌ Request setup error: ${error.message}`);
+        res.status(500).json({
+          error: 'Internal Server Error',
+          message: 'Failed to proxy request',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
   }
 
   private setupErrorHandling(): void {
