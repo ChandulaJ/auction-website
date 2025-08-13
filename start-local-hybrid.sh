@@ -80,21 +80,45 @@ cd common && npm install && npm run build
 cd ..
 
 # Install and start services
-services=("auth" "bid" "listings" "payments" "profile" "email" "expiration" "frontend")
+services=("api-gateway" "auth" "bid" "listings" "payments" "profile" "email" "expiration" "frontend")
 pids=()
 
 echo -e "${BLUE}🛠️ Installing dependencies and starting services...${NC}"
 
+# Install dependencies for all services
 for service in "${services[@]}"; do
-    echo -e "${YELLOW}📦 Installing dependencies for $service service...${NC}"
-    cd services/$service
-    npm install
-    cd ../..
+    if [ "$service" != "frontend" ]; then
+        echo -e "${YELLOW}📦 Installing dependencies for $service service...${NC}"
+        cd services/$service
+        npm install
+        cd ../..
+    fi
 done
+
+# Install frontend dependencies separately
+echo -e "${YELLOW}📦 Installing dependencies for frontend service...${NC}"
+cd services/frontend
+npm install
+cd ../..
+
+# Start API Gateway first
+echo -e "${GREEN}🌐 Starting API Gateway on port 3001...${NC}"
+cd services/api-gateway
+(
+    source ../../.env.local
+    export $(cat ../../.env.local | grep -v '^#' | xargs)
+    export PORT=3001
+    npm start
+) > ../../logs/api-gateway.log 2>&1 &
+pids+=($!)
+cd ../..
+
+# Wait for API Gateway to start
+sleep 3
 
 # Start backend services
 backend_services=("auth" "bid" "listings" "payments" "profile" "email" "expiration")
-service_ports=("3001" "3002" "3003" "3004" "3005" "3006" "3007")
+service_ports=("3101" "3102" "3103" "3104" "3105" "3106" "3107")
 
 for i in "${!backend_services[@]}"; do
     service="${backend_services[$i]}"
@@ -145,15 +169,22 @@ echo -e "      - Listings MySQL: localhost:3308"
 echo -e "      - Payments MySQL: localhost:3309"
 echo -e "      - Profile MySQL: localhost:3310"
 echo -e ""
-echo -e "${GREEN}   🚀 Application Services:${NC}"
-echo -e "      - Frontend: http://localhost:3000"
-echo -e "      - Auth Service: http://localhost:3001"
-echo -e "      - Bid Service: http://localhost:3002"
-echo -e "      - Listings Service: http://localhost:3003"
-echo -e "      - Payments Service: http://localhost:3004"
-echo -e "      - Profile Service: http://localhost:3005"
-echo -e "      - Email Service: http://localhost:3006"
-echo -e "      - Expiration Service: http://localhost:3007"
+echo -e "${GREEN}   🌐 API Gateway:${NC}"
+echo -e "      - Gateway: http://localhost:3001"
+echo -e "      - Health Check: http://localhost:3001/health"
+echo -e "      - API Docs: http://localhost:3001/api"
+echo -e ""
+echo -e "${GREEN}   🚀 Backend Services:${NC}"
+echo -e "      - Auth Service: http://localhost:3101"
+echo -e "      - Bid Service: http://localhost:3102"
+echo -e "      - Listings Service: http://localhost:3103"
+echo -e "      - Payments Service: http://localhost:3104"
+echo -e "      - Profile Service: http://localhost:3105"
+echo -e "      - Email Service: http://localhost:3106"
+echo -e "      - Expiration Service: http://localhost:3107"
+echo -e ""
+echo -e "${GREEN}   🎨 Frontend:${NC}"
+echo -e "      - Next.js App: http://localhost:3000"
 echo -e ""
 echo -e "${YELLOW}📝 Logs are available in the logs/ directory${NC}"
 echo -e "${YELLOW}🛑 To stop all services, run: ./stop-local.sh${NC}"
@@ -166,13 +197,28 @@ sleep 15
 
 # Check if services are responding
 echo -e "${BLUE}🔍 Checking service health...${NC}"
-for port in 3001 3002 3003 3004 3005 3006 3007; do
+echo -e "${YELLOW}⏳ Checking API Gateway...${NC}"
+if nc -z localhost 3001 2>/dev/null; then
+    echo -e "${GREEN}✅ API Gateway is responding${NC}"
+else
+    echo -e "${YELLOW}⏳ API Gateway is still starting...${NC}"
+fi
+
+echo -e "${YELLOW}⏳ Checking backend services...${NC}"
+for port in 3101 3102 3103 3104 3105 3106 3107; do
     if nc -z localhost $port 2>/dev/null; then
         echo -e "${GREEN}✅ Service on port $port is responding${NC}"
     else
         echo -e "${YELLOW}⏳ Service on port $port is still starting...${NC}"
     fi
 done
+
+echo -e "${YELLOW}⏳ Checking frontend...${NC}"
+if nc -z localhost 3000 2>/dev/null; then
+    echo -e "${GREEN}✅ Frontend is responding${NC}"
+else
+    echo -e "${YELLOW}⏳ Frontend is still starting...${NC}"
+fi
 
 # Keep script running and handle Ctrl+C
 trap 'echo -e "\n${YELLOW}🛑 Stopping services...${NC}"; ./stop-local.sh; exit 0' INT

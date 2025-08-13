@@ -70,7 +70,7 @@ import { socketIOWrapper } from './socket-io-wrapper';
     await db.sync();
     console.log('Conneted to MySQL');
 
-    const port = process.env.PORT || 3003;
+    const port = process.env.PORT || 3103;
     const server = app.listen(port, () =>
       console.log(`Listening on port ${port}!`)
     );

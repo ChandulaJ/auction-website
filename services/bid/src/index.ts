@@ -48,7 +48,7 @@ import { natsWrapper } from './nats-wrapper';
     await db.sync({ force: true });
     console.log('Conneted to MySQL');
 
-    const port = process.env.PORT || 3002;
+    const port = process.env.PORT || 3102;
     app.listen(port, () => console.log(`Listening on port ${port}!`));
 
     new ListingCreatedListener(natsWrapper.client).listen();
