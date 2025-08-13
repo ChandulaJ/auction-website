@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { NextPageContext } from 'next';
 import Head from 'next/head';
 import React, { useContext, useState } from 'react';
@@ -9,6 +8,7 @@ import DashboardTabs from '../../components/DashboardTabs';
 import Error from '../../components/ErrorMessage';
 import ListingDashboardTableRow from '../../components/ListingDashboardTableRow';
 import AppContext from '../../context/app-context';
+import buildClient from '../../api/base-client';
 
 const Listings = ({ listingsData }) => {
   const {
@@ -18,7 +18,8 @@ const Listings = ({ listingsData }) => {
 
   const onDelete = async (listingId) => {
     try {
-      await axios.delete(`/api/listings/${listingId}`);
+      const client = buildClient({});
+      await client.delete(`/api/listings/${listingId}`);
       setListings(listings.filter((listing) => listing.id !== listingId));
       toast.success('Sucessfully deleted listing!');
     } catch (err) {

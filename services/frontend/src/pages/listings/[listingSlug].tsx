@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
 import Head from 'next/head';
@@ -15,6 +14,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import Countdown from '../../components/Countdown';
 import Error from '../../components/ErrorMessage';
 import { centsToDollars } from '../../utils/cents-to-dollars';
+import buildClient from '../../api/base-client';
 
 const StyledListing = styled.div`${tw`
 	flex 
@@ -114,7 +114,8 @@ const Listing = ({ listingData }) => {
     setIsBidding(true);
 
     try {
-      await axios.post(`/api/bids/${listing.id}`, {
+      const client = buildClient({});
+      await client.post(`/api/bids/${listing.id}`, {
         amount: body.amount * 100,
       });
       toast.success('Sucessfully placed bid!');

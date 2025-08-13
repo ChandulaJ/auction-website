@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { NextPageContext } from 'next';
 import Head from 'next/head';
 import React, { useContext, useState } from 'react';
@@ -9,6 +8,7 @@ import DashboardBreadcrumbs from '../../components/DashboardBreadcrumbs';
 import DashboardTabs from '../../components/DashboardTabs';
 import Error from '../../components/ErrorMessage';
 import AppContext from '../../context/app-context';
+import buildClient from '../../api/base-client';
 
 const Bids = ({ bidsData }) => {
   const {
@@ -18,7 +18,8 @@ const Bids = ({ bidsData }) => {
 
   const onDelete = async (bidId) => {
     try {
-      await axios.delete(`/api/bids/${bidId}`);
+      const client = buildClient({});
+      await client.delete(`/api/bids/${bidId}`);
       setBids(bids.filter((bid) => bid.id !== bidId));
       toast.success('Sucessfully  deleted bid!');
     } catch (err) {

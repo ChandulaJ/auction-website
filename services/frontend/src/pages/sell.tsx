@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Head from 'next/head';
 import Router from 'next/router';
@@ -14,6 +13,7 @@ import DatePicker from '../components/DatePicker';
 import Error from '../components/ErrorMessage';
 import ImageUpload from '../components/ImageUpload';
 import AppContext from '../context/app-context';
+import buildClient from '../api/base-client';
 
 const StyledErrorMessage = styled.div`${tw`
     text-sm
@@ -56,7 +56,8 @@ const Sell = () => {
       body.price *= 100;
       const formData = new FormData();
       Object.keys(body).forEach((key) => formData.append(key, body[key]));
-      const { data } = await axios.post('/api/listings', formData);
+      const client = buildClient({});
+      const { data } = await client.post('/api/listings', formData);
       toast.success('Sucessfully listed item for sale!');
       Router.push(`/listings/${data.slug}`);
     } catch (err) {
