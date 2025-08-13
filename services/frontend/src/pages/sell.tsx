@@ -67,9 +67,23 @@ const Sell = (): JSX.Element => {
       Object.keys(body).forEach((key) => {
         if (key === 'price') {
           formData.append(key, priceInCents.toString());
+        } else if (key === 'expiresAt') {
+          // Ensure date is properly formatted as ISO string
+          const dateValue = body[key];
+          if (dateValue instanceof Date) {
+            formData.append(key, dateValue.toISOString());
+          } else {
+            formData.append(key, new Date(dateValue).toISOString());
+          }
         } else {
           formData.append(key, body[key]);
         }
+      });
+      
+      console.log('FormData entries:');
+      // Log FormData entries for debugging
+      Array.from(formData.entries()).forEach(([key, value]) => {
+        console.log(key, value);
       });
       
       const client = buildClient({});

@@ -39,38 +39,43 @@ router.post(
           throw new Error('Invalid value');
         }
         // Check for reasonable upper limit (max $999,999.99 = 99,999,999 cents)
-        if (price > 999999.99) {
+        if (price > 99999999) {
           throw new Error('Invalid value');
         }
         return true;
       }),
     body('title')
-      .notEmpty()
-      .withMessage('The listing title must be between 5 and 1000 characters')
+      .trim()
       .isLength({ min: 5, max: 1000 })
-      .withMessage('The listing title must be between 5 and 1000 characters')
-      .trim(),
+      .withMessage('The listing title must be between 5 and 1000 characters'),
     body('expiresAt')
       .notEmpty()
       .withMessage('Invalid Date')
       .custom((value) => {
-        const enteredDate = new Date(value);
-        const tommorowsDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        if (isNaN(enteredDate.getTime()) || enteredDate <= tommorowsDate) {
+        console.log('Date value received:', value, 'Type:', typeof value);
+        let enteredDate;
+        
+        // Handle different date formats
+        if (typeof value === 'string') {
+          enteredDate = new Date(value);
+        } else {
+          enteredDate = new Date(value);
+        }
+        
+        const tomorrowsDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        console.log('Parsed date:', enteredDate, 'Tomorrow:', tomorrowsDate);
+        
+        if (isNaN(enteredDate.getTime()) || enteredDate <= tomorrowsDate) {
           throw new Error('Invalid Date');
         }
         return true;
       }),
     body('description')
-      .notEmpty()
-      .withMessage(
-        'The listing description must be between 5 and 500 characters'
-      )
+      .trim()
       .isLength({ min: 5, max: 500 })
       .withMessage(
         'The listing description must be between 5 and 500 characters'
-      )
-      .trim(),
+      ),
   ],
   validateRequest,
   async (req: MulterS3Request, res: Response) => {
