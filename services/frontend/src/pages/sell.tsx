@@ -23,10 +23,12 @@ const StyledErrorMessage = styled.div`${tw`
 
 const validationSchema = Yup.object({
   title: Yup.string()
-    .max(15, 'Must be 15 characters or less')
+    .min(5, 'The listing title must be between 5 and 1000 characters')
+    .max(1000, 'The listing title must be between 5 and 1000 characters')
     .required('Required'),
   description: Yup.string()
-    .max(5000, 'Must be 5000 characters or less')
+    .min(5, 'The listing description must be between 5 and 500 characters')
+    .max(500, 'The listing description must be between 5 and 500 characters')
     .required('Required'),
   image: Yup.mixed().required('Required'),
   price: Yup.string()
@@ -43,7 +45,7 @@ const validationSchema = Yup.object({
     ),
 });
 
-const Sell = () => {
+const Sell = (): JSX.Element => {
   const {
     auth: { isAuthenticated },
   } = useContext(AppContext);
@@ -53,9 +55,23 @@ const Sell = () => {
     setIsSubmitting(true);
 
     try {
-      body.price *= 100;
+      // Convert price to cents and ensure it's a valid number
+      const priceInCents = Math.round(parseFloat(body.price) * 100);
+      if (isNaN(priceInCents) || priceInCents <= 0) {
+        toast.error('Please enter a valid price');
+        setIsSubmitting(false);
+        return;
+      }
+
       const formData = new FormData();
-      Object.keys(body).forEach((key) => formData.append(key, body[key]));
+      Object.keys(body).forEach((key) => {
+        if (key === 'price') {
+          formData.append(key, priceInCents.toString());
+        } else {
+          formData.append(key, body[key]);
+        }
+      });
+      
       const client = buildClient({});
       const { data } = await client.post('/api/listings', formData);
       toast.success('Sucessfully listed item for sale!');

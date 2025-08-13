@@ -51,7 +51,7 @@ The application now uses a proper microservices architecture with an API Gateway
 
 1. **Configure environment variables**:
    - The `.env.local` file is already configured for this setup
-   - Update Cloudinary, Stripe, and email credentials as needed
+   - Update AWS S3, Stripe, and email credentials as needed
 
 2. **Start all services**:
    ```bash

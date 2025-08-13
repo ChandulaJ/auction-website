@@ -6,7 +6,8 @@ const buildClient = (context) => {
     const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     return axios.create({
       baseURL: baseURL,
-      headers: context.req.headers
+      headers: context.req.headers,
+      withCredentials: true
     })
   }else{
     // Client-side - use API Gateway  
@@ -15,12 +16,14 @@ const buildClient = (context) => {
     if (isLocal) {
       // Local development - use API Gateway
       return axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+        withCredentials: true
       })
     } else {
       // Production - use relative URLs (ingress will handle routing)
       return axios.create({
-        baseURL: '/'
+        baseURL: '/',
+        withCredentials: true
       })
     }
   }

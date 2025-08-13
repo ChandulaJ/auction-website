@@ -13,7 +13,7 @@ This guide shows how to run the auction website using Docker only for infrastruc
 1. **Configure environment variables**:
 
    - The `.env.local` file is already configured for this setup
-   - Update Cloudinary, Stripe, and email credentials as needed
+   - Update AWS S3, Stripe, and email credentials as needed
 2. **Start all services**:
 
    ```bash
@@ -56,10 +56,11 @@ This guide shows how to run the auction website using Docker only for infrastruc
 Update the following in `.env.local`:
 
 ```bash
-# Cloudinary (for image uploads)
-CLOUDINARY_CLOUD_NAME=your_actual_cloud_name
-CLOUDINARY_API_KEY=your_actual_api_key
-CLOUDINARY_API_SECRET=your_actual_api_secret
+# AWS S3 (for image uploads)
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET_NAME=your_s3_bucket_name
 
 # Stripe (for payments)
 STRIPE_KEY=sk_test_your_actual_stripe_key

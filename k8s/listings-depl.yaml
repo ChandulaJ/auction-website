@@ -36,21 +36,26 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: CLOUDINARY_API_KEY
+            - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: cloudinary-api-key-secret
-                  key: CLOUDINARY_API_KEY
-            - name: CLOUDINARY_CLOUD_NAME
+                  name: aws-access-key-id-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: cloudinary-cloud-name-secret
-                  key: CLOUDINARY_CLOUD_NAME
-            - name: CLOUDINARY_API_SECRET
+                  name: aws-secret-access-key-secret
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
               valueFrom:
                 secretKeyRef:
-                  name: cloudinary-api-secret-secret
-                  key: CLOUDINARY_API_SECRET
+                  name: aws-region-secret
+                  key: AWS_REGION
+            - name: AWS_S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: aws-s3-bucket-name-secret
+                  key: AWS_S3_BUCKET_NAME
 
 ---
 apiVersion: v1

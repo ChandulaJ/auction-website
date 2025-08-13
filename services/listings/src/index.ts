@@ -1,5 +1,3 @@
-import cloudinary from 'cloudinary';
-
 import { app } from './app';
 import { BidCreatedListener } from './events/listeners/bid-created-listener';
 import { BidDeletedListener } from './events/listeners/bid-deleted-listener';
@@ -33,24 +31,17 @@ import { socketIOWrapper } from './socket-io-wrapper';
       throw new Error('NATS_CLUSTER_ID must be defined');
     }
 
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      throw new Error('NATS_CLUSTER_ID must be defined');
+    if (!process.env.AWS_ACCESS_KEY_ID) {
+      throw new Error('AWS_ACCESS_KEY_ID must be defined');
     }
 
-    if (!process.env.CLOUDINARY_API_KEY) {
-      throw new Error('NATS_CLUSTER_ID must be defined');
+    if (!process.env.AWS_SECRET_ACCESS_KEY) {
+      throw new Error('AWS_SECRET_ACCESS_KEY must be defined');
     }
 
-    if (!process.env.CLOUDINARY_API_SECRET) {
-      throw new Error('NATS_CLUSTER_ID must be defined');
+    if (!process.env.AWS_S3_BUCKET_NAME) {
+      throw new Error('AWS_S3_BUCKET_NAME must be defined');
     }
-
-    // @ts-ignore
-    await cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
 
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID,
