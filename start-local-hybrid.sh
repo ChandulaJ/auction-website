@@ -189,7 +189,7 @@ echo -e ""
 echo -e "${YELLOW} Logs are available in the logs/ directory${NC}"
 echo -e "${YELLOW} To stop all services, run: ./stop-local.sh${NC}"
 echo -e ""
-echo -e "${GREEN}🎉 Auction Website is ready! Visit http://localhost:3000${NC}"
+echo -e "${GREEN} Auction Website is ready! Visit http://localhost:3000${NC}"
 
 # Wait for services to start up
 echo -e "${YELLOW} Waiting for services to initialize...${NC}"

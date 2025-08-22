@@ -28,4 +28,4 @@ if [ -d "logs" ]; then
     rm -rf logs/*.log
 fi
 
-echo -e "${GREEN}🎉 Cleanup complete!${NC}"
+echo -e "${GREEN} Cleanup complete!${NC}"
