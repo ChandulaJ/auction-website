@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 
+import buildClient from '../api/base-client';
 import AppContext from '../context/app-context';
 import ClickAwayButton from './ClickAwayButton';
 
@@ -74,7 +74,8 @@ const UserMenu = () => {
 
   const onClick = async () => {
     try {
-      await axios.post('/api/auth/signout');
+      const client = buildClient({});
+      await client.post('/api/auth/signout');
       setAuth({ isAuthenticated: false, currentUser: null });
     } catch (err) {}
   };
