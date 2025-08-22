@@ -3,7 +3,7 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import io from 'socket.io-client';
 import tw from 'twin.macro';
@@ -13,6 +13,7 @@ import Breadcrumb from '../../components/Breadcrumb';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Countdown from '../../components/Countdown';
 import Error from '../../components/ErrorMessage';
+import AppContext from '../../context/app-context';
 import { centsToDollars } from '../../utils/cents-to-dollars';
 import buildClient from '../../api/base-client';
 
@@ -78,6 +79,9 @@ const StyledErrorMessage = styled.div`${tw`
 `}`;
 
 const Listing = ({ listingData }) => {
+  const {
+    auth: { isAuthenticated, currentUser },
+  } = useContext(AppContext);
   const [listing, setListing] = useState(listingData);
   const [isBidding, setIsBidding] = useState(false);
 
@@ -191,36 +195,70 @@ const Listing = ({ listingData }) => {
               </StyledTableRow>
             </tbody>
           </StyledTable>
-          <Formik
-            initialValues={{
-              amount: '',
-            }}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
-          >
-            <Form>
-              <div className="mt-1 flex rounded-md shadow-sm">
-                <div className="relative flex items-stretch flex-grow focus-within:z-10">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">$</span>
+          {isAuthenticated ? (
+            <Formik
+              initialValues={{
+                amount: '',
+              }}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              <Form>
+                <div className="mt-1 flex rounded-md shadow-sm">
+                  <div className="relative flex items-stretch flex-grow focus-within:z-10">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <Field
+                      type="text"
+                      name="amount"
+                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-7 sm:text-sm border-gray-300"
+                      placeholder="Amount to bid"
+                    />
                   </div>
-                  <Field
-                    type="text"
-                    name="amount"
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-7 sm:text-sm border-gray-300"
-                    placeholder="Amount to bid"
-                  />
+                  <button
+                    type="submit"
+                    className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    {isBidding ? 'Placing bid...' : 'Bid now!'}
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  {isBidding ? 'Placing bid...' : 'Bid now!'}
-                </button>
+                <ErrorMessage component={StyledErrorMessage} name="amount" />
+              </Form>
+            </Formik>
+          ) : (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Sign in to place a bid
+                  </h3>
+                  <div className="mt-2 text-sm text-blue-700">
+                    <p>
+                      You need to be signed in to place bids on auction items.{' '}
+                      <Link href="/auth/signin">
+                        <a className="font-medium underline text-blue-800 hover:text-blue-600">
+                          Sign in here
+                        </a>
+                      </Link>{' '}
+                      or{' '}
+                      <Link href="/auth/signup">
+                        <a className="font-medium underline text-blue-800 hover:text-blue-600">
+                          create an account
+                        </a>
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                </div>
               </div>
-              <ErrorMessage component={StyledErrorMessage} name="amount" />
-            </Form>
-          </Formik>
+            </div>
+          )}
         </StyledTextContent>
         <StyledImgContainer>
           <StyledImg src={listing.largeImage} alt="Product Image" />
