@@ -3,6 +3,7 @@ import axios from 'axios';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import FormData from 'form-data';
 import config from '../config/default';
 
 interface CustomError extends Error {
@@ -21,10 +22,12 @@ class ApiGateway {
 
   private setupMiddleware(): void {
     // Security middleware
-    this.app.use(helmet({
-      crossOriginEmbedderPolicy: false,
-      contentSecurityPolicy: false
-    }));
+    this.app.use(
+      helmet({
+        crossOriginEmbedderPolicy: false,
+        contentSecurityPolicy: false,
+      })
+    );
 
     // CORS middleware
     this.app.use(cors(config.cors));
@@ -34,9 +37,27 @@ class ApiGateway {
       this.app.use(morgan('combined'));
     }
 
-    // Body parsing middleware
-    this.app.use(express.json({ limit: '10mb' }));
-    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+    // Custom middleware to handle different content types
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      const contentType = req.headers['content-type'];
+
+      if (contentType && contentType.includes('multipart/form-data')) {
+        // For multipart form data, collect raw body
+        const chunks: Buffer[] = [];
+        req.on('data', (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+        req.on('end', () => {
+          (req as any).rawBody = Buffer.concat(chunks);
+          next();
+        });
+      } else {
+        // For other content types, use default parsing
+        express.json({ limit: '10mb' })(req, res, () => {
+          express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+        });
+      }
+    });
   }
 
   private setupRoutes(): void {
@@ -56,25 +77,25 @@ class ApiGateway {
         version: '1.0.0',
         services: Object.keys(config.services),
         endpoints: Object.entries(config.services).reduce((acc, [name, service]) => {
-          acc[name] = {
-            url: service.url,
-            paths: service.paths
-          };
-          return acc;
+            acc[name] = {
+              url: service.url,
+              paths: service.paths,
+            };
+            return acc;
         }, {} as Record<string, { url: string; paths: string[] }>)
       });
     });
 
     // Setup service proxies using axios
     Object.entries(config.services).forEach(([serviceName, serviceConfig]) => {
-      serviceConfig.paths.forEach(path => {
+      serviceConfig.paths.forEach((path) => {
         console.log(`🔗 Proxying ${path}/* → ${serviceConfig.url}`);
-        
+
         // Handle exact path match (e.g., /api/listings)
         this.app.all(path, async (req: Request, res: Response) => {
           await this.proxyRequest(req, res, serviceConfig.url, serviceName);
         });
-        
+
         // Handle wildcard path match (e.g., /api/listings/*)
         this.app.all(`${path}/*`, async (req: Request, res: Response) => {
           await this.proxyRequest(req, res, serviceConfig.url, serviceName);
@@ -93,29 +114,43 @@ class ApiGateway {
     });
   }
 
-  private async proxyRequest(req: Request, res: Response, targetUrl: string, serviceName: string): Promise<void> {
+  private async proxyRequest(
+    req: Request,
+    res: Response,
+    targetUrl: string,
+    serviceName: string
+  ): Promise<void> {
     try {
-      console.log(`📡 Proxying ${req.method} ${req.originalUrl} → ${serviceName}`);
-      
+      console.log(
+        `📡 Proxying ${req.method} ${req.originalUrl} → ${serviceName}`
+      );
       const fullTargetUrl = `${targetUrl}${req.originalUrl}`;
       console.log(`📤 Forwarding to: ${fullTargetUrl}`);
-      
       const axiosConfig: any = {
         method: req.method.toLowerCase(),
         url: fullTargetUrl,
         headers: {
           'Content-Type': req.headers['content-type'] || 'application/json',
           'User-Agent': req.headers['user-agent'] || 'api-gateway',
-          'Accept': req.headers['accept'] || '*/*',
-          'Cookie': req.headers['cookie'] || ''
+          Accept: req.headers['accept'] || '*/*',
+          Cookie: req.headers['cookie'] || '',
         },
         timeout: config.proxy.timeout,
-        validateStatus: () => true // Don't throw errors for HTTP error status codes
+        validateStatus: () => true, // Don't throw errors for HTTP error status codes
       };
 
-      // Add body for non-GET requests
-      if (req.method !== 'GET' && req.body) {
-        axiosConfig.data = req.body;
+      // Handle different content types appropriately
+      if (req.method !== 'GET') {
+        const contentType = req.headers['content-type'];
+        if (contentType && contentType.includes('multipart/form-data')) {
+          // For multipart form data, use the raw body
+          axiosConfig.data = (req as any).rawBody;
+          axiosConfig.maxContentLength = Infinity;
+          axiosConfig.maxBodyLength = Infinity;
+        } else if (req.body) {
+          // For JSON and URL-encoded data, use the parsed body
+          axiosConfig.data = req.body;
+        }
       }
 
       // Add query parameters

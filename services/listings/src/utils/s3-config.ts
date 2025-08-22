@@ -1,12 +1,24 @@
-import AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 
-// Configure AWS
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// Validate AWS credentials
+const getAWSCredentials = () => {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  if (!accessKeyId) {
+    throw new Error('AWS_ACCESS_KEY_ID environment variable is required');
+  }
+  if (!secretAccessKey) {
+    throw new Error('AWS_SECRET_ACCESS_KEY environment variable is required');
+  }
+  return { accessKeyId, secretAccessKey };
+};
+
+// Configure AWS SDK v3
+const s3Client = new S3Client({
   region: process.env.AWS_REGION || 'us-east-1',
+  credentials: getAWSCredentials(),
 });
 
 // Get bucket name with validation
@@ -18,13 +30,13 @@ const getBucketName = (): string => {
   return bucketName;
 };
 
-// Configure multer for S3 upload
+// Configure multer for S3 upload with AWS SDK v3
 const uploadToS3 = multer({
   storage: multerS3({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    s3: s3 as any, // AWS SDK v2 compatibility with multer-s3
+    s3: s3Client,
     bucket: getBucketName(),
-    acl: 'public-read',
+    // Removed ACL since the bucket doesn't allow ACLs
+    // Files will inherit bucket's public access policy
     key: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       cb(null, `listings/${uniqueSuffix}-${file.originalname}`);
@@ -67,4 +79,4 @@ const generateImageUrls = (
   };
 };
 
-export { generateImageUrls, s3, uploadToS3 };
+export { generateImageUrls, s3Client, uploadToS3 };
