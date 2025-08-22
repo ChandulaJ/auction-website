@@ -49,8 +49,8 @@ router.post(
         where: { id: req.currentUser!.id },
         defaults: {
           id: req.currentUser!.id,
-          name: 'Unknown User', // Placeholder - will be updated when user events arrive
-          email: 'unknown@email.com',
+          name: `Unknown User ${req.currentUser!.id.substring(0, 8)}`, // Make name unique per user
+          email: `unknown+${req.currentUser!.id.substring(0, 8)}@email.com`, // Make email unique per user
           avatar: '',
           version: 0,
         },

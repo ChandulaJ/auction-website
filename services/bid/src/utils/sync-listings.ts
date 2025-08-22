@@ -19,7 +19,7 @@ export const syncExistingData = async (): Promise<void> => {
     console.log(' Syncing existing listings from listings service...');
 
     const listingsServiceUrl =
-      process.env.LISTINGS_SERVICE_URL || 'http://localhost:3103';
+      process.env.LISTINGS_SERVICE_URL || 'http://localhost:3003';
     const response = await axios.get(`${listingsServiceUrl}/api/listings`);
     const listings: ListingData[] = response.data;
 
@@ -47,7 +47,7 @@ export const syncExistingData = async (): Promise<void> => {
           );
         } else {
           console.log(
-            `⏩ Listing already exists: ${listingData.title} (${listingData.id})`
+            ` Listing already exists: ${listingData.title} (${listingData.id})`
           );
         }
       } catch (error) {

@@ -91,7 +91,7 @@ const Listing = ({ listingData }) => {
 
     // Connect to socket.io through the listings service directly
     // In a production environment, this would go through a proper WebSocket proxy
-    const socket = io('http://localhost:3103/socket', {
+    const socket = io('http://localhost:3003/socket', {
       secure: false,
       query: { r_var: room },
     });

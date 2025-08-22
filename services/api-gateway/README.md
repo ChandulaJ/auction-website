@@ -1,6 +1,10 @@
 # API Gateway Service
 
-The API Gateway service acts as a single entry point for all client requests to the auction website microservices. It routes requests to the appropriate backend services and handles cross-cutting concerns like CORS, logging, and error handling.
+The API AUTH_SERVICE_URL=http://localhost:3001
+BIDS_SERVICE_URL=http://localhost:3002
+LISTINGS_SERVICE_URL=http://localhost:3003
+PAYMENTS_SERVICE_URL=http://localhost:3004
+PROFILE_SERVICE_URL=http://localhost:3005ay service acts as a single entry point for all client requests to the auction website microservices. It routes requests to the appropriate backend services and handles cross-cutting concerns like CORS, logging, and error handling.
 
 ## Features
 
@@ -15,11 +19,11 @@ The API Gateway service acts as a single entry point for all client requests to 
 
 | Path | Target Service | Port |
 |------|---------------|------|
-| `/api/auth/*` | Auth Service | 3101 |
-| `/api/bids/*` | Bid Service | 3102 |
-| `/api/listings/*` | Listings Service | 3103 |
-| `/api/payments/*` | Payments Service | 3104 |
-| `/api/profile/*` | Profile Service | 3105 |
+| `/api/auth/*` | Auth Service | 3001 |
+| `/api/bids/*` | Bid Service | 3002 |
+| `/api/listings/*` | Listings Service | 3003 |
+| `/api/payments/*` | Payments Service | 3004 |
+| `/api/profile/*` | Profile Service | 3005 |
 
 ## Environment Variables
 

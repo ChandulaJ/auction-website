@@ -52,7 +52,7 @@ import { syncExistingData } from './utils/sync-listings';
     // Sync existing listings from listings service
     await syncExistingData();
 
-    const port = process.env.PORT || 3102;
+    const port = process.env.PORT || 3002;
     app.listen(port, () => console.log(`Listening on port ${port}!`));
 
     new ListingCreatedListener(natsWrapper.client).listen();

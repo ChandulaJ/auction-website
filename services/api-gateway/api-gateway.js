@@ -1,25 +1,41 @@
+require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
 
-// Enable CORS for all origins in development
+// Configuration
+const config = {
+  port: process.env.PORT || 8080,
+  nodeEnv: process.env.NODE_ENV || 'development',
+  services: {
+    auth: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
+    bids: process.env.BIDS_SERVICE_URL || 'http://localhost:3002',
+    listings: process.env.LISTINGS_SERVICE_URL || 'http://localhost:3003',
+    payments: process.env.PAYMENTS_SERVICE_URL || 'http://localhost:3004',
+    profile: process.env.PROFILE_SERVICE_URL || 'http://localhost:3005'
+  }
+};
+
+// CORS configuration
 app.use(cors({
   credentials: true,
-  origin: true
+  origin: config.nodeEnv === 'production' 
+    ? process.env.ALLOWED_ORIGINS?.split(',') || ['https://yourdomain.com']
+    : true
 }));
 
-// Parse JSON bodies
-app.use(express.json());
+// Parse JSON bodies with size limit
+app.use(express.json({ limit: '10mb' }));
 
-// Route mappings
+// Route mappings using environment variables
 const routes = {
-  '/api/auth': 'http://localhost:3001',
-  '/api/bids': 'http://localhost:3002', 
-  '/api/listings': 'http://localhost:3003',
-  '/api/payments': 'http://localhost:3004',
-  '/api/profile': 'http://localhost:3005'
+  '/api/auth': config.services.auth,
+  '/api/bids': config.services.bids,
+  '/api/listings': config.services.listings,
+  '/api/payments': config.services.payments,
+  '/api/profile': config.services.profile
 };
 
 // Helper function to get target service
