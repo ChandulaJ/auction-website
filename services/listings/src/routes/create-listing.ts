@@ -184,7 +184,7 @@ router.post(
           throw new BadRequestError('S3 bucket not configured');
         }
         console.log('Generating image URLs for key:', uploadedFile.key);
-        const imageUrls = generateImageUrls(uploadedFile.key, bucketName);
+        const imageUrls = await generateImageUrls(uploadedFile.key, bucketName);
         console.log('Generated image URLs:', imageUrls);
 
         console.log('Creating listing with data:', {

@@ -1,4 +1,5 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 
@@ -35,8 +36,10 @@ const uploadToS3 = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: getBucketName(),
-    // Removed ACL since the bucket doesn't allow ACLs
-    // Files will inherit bucket's public access policy
+    // Explicitly set metadata and ensure no ACL is set
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
     key: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       cb(null, `listings/${uniqueSuffix}-${file.originalname}`);
@@ -57,26 +60,46 @@ const uploadToS3 = multer({
 });
 
 // Function to generate different sized image URLs for S3
-const generateImageUrls = (
+const generateImageUrls = async (
   key: string,
   bucketName: string
-): {
+): Promise<{
   original: string;
   small: string;
   large: string;
-} => {
-  const baseUrl = `https://${bucketName}.s3.${
-    process.env.AWS_REGION || 'us-east-1'
-  }.amazonaws.com/${key}`;
+}> => {
+  try {
+    // Generate pre-signed URL that expires in 24 hours
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
 
-  // For simplicity, we'll use the same image for different sizes
-  // In a production environment, you might want to use AWS Lambda or CloudFront
-  // with image transformation capabilities
-  return {
-    original: baseUrl,
-    small: baseUrl, // 225x225 equivalent
-    large: baseUrl, // 1280x1280 equivalent
-  };
+    const signedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 86400,
+    });
+
+    // For simplicity, we'll use the same signed URL for different sizes
+    // In a production environment, you might want to use AWS Lambda or CloudFront
+    // with image transformation capabilities
+    return {
+      original: signedUrl,
+      small: signedUrl, // 225x225 equivalent
+      large: signedUrl, // 1280x1280 equivalent
+    };
+  } catch (error) {
+    console.error('Error generating signed URLs:', error);
+    // Fallback to direct URLs
+    const baseUrl = `https://${bucketName}.s3.${
+      process.env.AWS_REGION || 'us-east-1'
+    }.amazonaws.com/${key}`;
+
+    return {
+      original: baseUrl,
+      small: baseUrl,
+      large: baseUrl,
+    };
+  }
 };
 
 export { generateImageUrls, s3Client, uploadToS3 };
