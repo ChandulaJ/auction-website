@@ -8,6 +8,13 @@ const router = express.Router();
 router.get('/api/listings/', async (req: Request, res: Response) => {
   const search = req.query.search || '';
 
+  console.log('=== GET LISTINGS DEBUG ===');
+  console.log('req.query.search:', req.query.search);
+  console.log('search variable:', search);
+  console.log('search type:', typeof search);
+  console.log('search falsy?:', !search);
+  console.log('will use search?:', !!search);
+
   const listings = search
     ? await Listing.findAll({
         attributes: {
@@ -26,6 +33,9 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
         order: [[Sequelize.literal('score'), 'DESC']],
       })
     : await Listing.findAll();
+
+  console.log('listings found:', listings.length);
+  console.log('=== END DEBUG ===');
 
   res.status(200).send(listings);
 });
