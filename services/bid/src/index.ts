@@ -5,6 +5,7 @@ import { ListingUpdatedListener } from './events/listeners/listing-updated-liste
 import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper';
+import { syncExistingData } from './utils/sync-listings';
 
 (async () => {
   try {
@@ -45,8 +46,11 @@ import { natsWrapper } from './nats-wrapper';
     process.on('SIGTERM', () => natsWrapper.client.close());
 
     await db.authenticate();
-    await db.sync({ force: true });
+    await db.sync({ force: false });
     console.log('Conneted to MySQL');
+
+    // Sync existing listings from listings service
+    await syncExistingData();
 
     const port = process.env.PORT || 3102;
     app.listen(port, () => console.log(`Listening on port ${port}!`));

@@ -8,7 +8,7 @@ import {
 import express, { Request, Response } from 'express';
 
 import { BidCreatedPublisher } from '../events/publishers/bid-created-publisher';
-import { Bid, Listing, db } from '../models';
+import { Bid, Listing, User, db } from '../models';
 import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
@@ -43,6 +43,19 @@ router.post(
           'Sellers cannot place bids on there own listings'
         );
       }
+
+      // Ensure user exists in the bid service database
+      await User.findOrCreate({
+        where: { id: req.currentUser!.id },
+        defaults: {
+          id: req.currentUser!.id,
+          name: 'Unknown User', // Placeholder - will be updated when user events arrive
+          email: 'unknown@email.com',
+          avatar: '',
+          version: 0,
+        },
+        transaction,
+      });
 
       const bid = await Bid.create(
         {
