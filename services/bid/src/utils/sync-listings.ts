@@ -16,14 +16,14 @@ interface ListingData {
 
 export const syncExistingData = async (): Promise<void> => {
   try {
-    console.log('🔄 Syncing existing listings from listings service...');
+    console.log(' Syncing existing listings from listings service...');
 
     const listingsServiceUrl =
       process.env.LISTINGS_SERVICE_URL || 'http://localhost:3103';
     const response = await axios.get(`${listingsServiceUrl}/api/listings`);
     const listings: ListingData[] = response.data;
 
-    console.log(`📋 Found ${listings.length} listings to sync`);
+    console.log(` Found ${listings.length} listings to sync`);
 
     for (const listingData of listings) {
       try {
@@ -43,7 +43,7 @@ export const syncExistingData = async (): Promise<void> => {
             expiresAt: new Date(listingData.expiresAt),
           });
           console.log(
-            `✅ Synced listing: ${listingData.title} (${listingData.id})`
+            ` Synced listing: ${listingData.title} (${listingData.id})`
           );
         } else {
           console.log(
@@ -55,7 +55,7 @@ export const syncExistingData = async (): Promise<void> => {
       }
     }
 
-    console.log('✅ Listing sync complete!');
+    console.log(' Listing sync complete!');
   } catch (error) {
     console.error('❌ Failed to sync listings:', error);
     // Don't throw error to prevent service from crashing

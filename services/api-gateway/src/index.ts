@@ -214,7 +214,7 @@ class ApiGateway {
   public async start(): Promise<void> {
     try {
       const server = this.app.listen(config.server.port, config.server.host, () => {
-        console.log('🚀 API Gateway started successfully!');
+        console.log(' API Gateway started successfully!');
         console.log(`📍 Gateway URL: http://${config.server.host}:${config.server.port}`);
         console.log('🔗 Service Routes:');
         
@@ -224,7 +224,7 @@ class ApiGateway {
           });
         });
         
-        console.log('\n📋 Available Endpoints:');
+        console.log('\n Available Endpoints:');
         console.log(`   GET  /health - Health check`);
         console.log(`   GET  /api - API documentation`);
         console.log('');
@@ -234,7 +234,7 @@ class ApiGateway {
       process.on('SIGTERM', () => {
         console.log('📴 Received SIGTERM, shutting down gracefully...');
         server.close(() => {
-          console.log('✅ API Gateway stopped');
+          console.log(' API Gateway stopped');
           process.exit(0);
         });
       });
@@ -242,7 +242,7 @@ class ApiGateway {
       process.on('SIGINT', () => {
         console.log('📴 Received SIGINT, shutting down gracefully...');
         server.close(() => {
-          console.log('✅ API Gateway stopped');
+          console.log(' API Gateway stopped');
           process.exit(0);
         });
       });

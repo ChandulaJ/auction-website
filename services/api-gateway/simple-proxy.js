@@ -102,7 +102,7 @@ app.all('*', (req, res) => {
 
 const port = 3001;
 app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 [MANUAL] Simple Manual Proxy running on port ${port}`);
+  console.log(` [MANUAL] Simple Manual Proxy running on port ${port}`);
   console.log(`📍 [MANUAL] Health check: http://localhost:${port}/health`);
   console.log(`🔗 [MANUAL] Auth proxy: http://localhost:${port}/api/auth/*`);
 });

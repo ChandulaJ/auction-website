@@ -110,12 +110,12 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway started on port ${PORT}`);
+  console.log(` API Gateway started on port ${PORT}`);
   console.log('📍 Route mappings:');
   Object.entries(routes).forEach(([route, target]) => {
     console.log(`   ${route} -> ${target}`);
   });
-  console.log(`🔍 Health check available at: http://localhost:${PORT}/health`);
+  console.log(` Health check available at: http://localhost:${PORT}/health`);
 });
 
 module.exports = app;

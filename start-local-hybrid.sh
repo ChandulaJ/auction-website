@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 Starting Auction Website Infrastructure and Services${NC}"
+echo -e "${BLUE} Starting Auction Website Infrastructure and Services${NC}"
 
 # Function to check if a command exists
 command_exists() {
@@ -21,11 +21,11 @@ wait_for_service() {
     local max_attempts=30
     local attempt=1
 
-    echo -e "${YELLOW}⏳ Waiting for $service_name to be ready on port $port...${NC}"
+    echo -e "${YELLOW} Waiting for $service_name to be ready on port $port...${NC}"
     
     while [ $attempt -le $max_attempts ]; do
         if nc -z localhost $port 2>/dev/null; then
-            echo -e "${GREEN}✅ $service_name is ready!${NC}"
+            echo -e "${GREEN} $service_name is ready!${NC}"
             return 0
         fi
         echo -e "${YELLOW}   Attempt $attempt/$max_attempts - $service_name not ready yet...${NC}"
@@ -38,7 +38,7 @@ wait_for_service() {
 }
 
 # Check required tools
-echo -e "${BLUE}🔍 Checking required tools...${NC}"
+echo -e "${BLUE} Checking required tools...${NC}"
 
 if ! command_exists docker; then
     echo -e "${RED}❌ Docker is not installed. Please install Docker first.${NC}"
@@ -55,10 +55,10 @@ if ! command_exists npm; then
     exit 1
 fi
 
-echo -e "${GREEN}✅ All required tools are available${NC}"
+echo -e "${GREEN} All required tools are available${NC}"
 
 # Start infrastructure services with Docker
-echo -e "${BLUE}🐳 Starting infrastructure services (NATS, Redis, MySQL)...${NC}"
+echo -e "${BLUE} Starting infrastructure services (NATS, Redis, MySQL)...${NC}"
 docker-compose -f docker-compose.infrastructure.yml up -d
 
 # Wait for services to be ready
@@ -71,11 +71,11 @@ wait_for_service "Payments MySQL" 3309
 wait_for_service "Profile MySQL" 3310
 
 # Give databases extra time to initialize
-echo -e "${YELLOW}⏳ Waiting for databases to fully initialize...${NC}"
+echo -e "${YELLOW} Waiting for databases to fully initialize...${NC}"
 sleep 10
 
 # Install dependencies for common package
-echo -e "${BLUE}📦 Installing common package dependencies...${NC}"
+echo -e "${BLUE} Installing common package dependencies...${NC}"
 cd common && npm install && npm run build
 cd ..
 
@@ -88,7 +88,7 @@ echo -e "${BLUE}🛠️ Installing dependencies and starting services...${NC}"
 # Install dependencies for all services
 for service in "${services[@]}"; do
     if [ "$service" != "frontend" ]; then
-        echo -e "${YELLOW}📦 Installing dependencies for $service service...${NC}"
+        echo -e "${YELLOW} Installing dependencies for $service service...${NC}"
         cd services/$service
         npm install
         cd ../..
@@ -96,13 +96,13 @@ for service in "${services[@]}"; do
 done
 
 # Install frontend dependencies separately
-echo -e "${YELLOW}📦 Installing dependencies for frontend service...${NC}"
+echo -e "${YELLOW} Installing dependencies for frontend service...${NC}"
 cd services/frontend
 npm install
 cd ../..
 
 # Start API Gateway first
-echo -e "${GREEN}🌐 Starting API Gateway on port 3001...${NC}"
+echo -e "${GREEN} Starting API Gateway on port 3001...${NC}"
 cd services/api-gateway
 (
     source ../../.env.local
@@ -123,7 +123,7 @@ service_ports=("3101" "3102" "3103" "3104" "3105" "3106" "3107")
 for i in "${!backend_services[@]}"; do
     service="${backend_services[$i]}"
     port="${service_ports[$i]}"
-    echo -e "${GREEN}🚀 Starting $service service on port $port...${NC}"
+    echo -e "${GREEN} Starting $service service on port $port...${NC}"
     cd services/$service
     
     # Source environment variables and start service in background
@@ -143,7 +143,7 @@ for i in "${!backend_services[@]}"; do
 done
 
 # Start frontend service
-echo -e "${GREEN}🌐 Starting frontend service on port 3000...${NC}"
+echo -e "${GREEN} Starting frontend service on port 3000...${NC}"
 cd services/frontend
 (
     # Set frontend-specific environment variables
@@ -158,9 +158,9 @@ cd ../..
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
-echo -e "${GREEN}✅ All services started successfully!${NC}"
-echo -e "${BLUE}📋 Service Status:${NC}"
-echo -e "${GREEN}   🐳 Infrastructure (Docker):${NC}"
+echo -e "${GREEN} All services started successfully!${NC}"
+echo -e "${BLUE} Service Status:${NC}"
+echo -e "${GREEN}    Infrastructure (Docker):${NC}"
 echo -e "      - NATS Streaming: http://localhost:8222"
 echo -e "      - Redis: localhost:6379"
 echo -e "      - Auth MySQL: localhost:3306"
@@ -169,12 +169,12 @@ echo -e "      - Listings MySQL: localhost:3308"
 echo -e "      - Payments MySQL: localhost:3309"
 echo -e "      - Profile MySQL: localhost:3310"
 echo -e ""
-echo -e "${GREEN}   🌐 API Gateway:${NC}"
+echo -e "${GREEN}    API Gateway:${NC}"
 echo -e "      - Gateway: http://localhost:3001"
 echo -e "      - Health Check: http://localhost:3001/health"
 echo -e "      - API Docs: http://localhost:3001/api"
 echo -e ""
-echo -e "${GREEN}   🚀 Backend Services:${NC}"
+echo -e "${GREEN}    Backend Services:${NC}"
 echo -e "      - Auth Service: http://localhost:3101"
 echo -e "      - Bid Service: http://localhost:3102"
 echo -e "      - Listings Service: http://localhost:3103"
@@ -183,46 +183,46 @@ echo -e "      - Profile Service: http://localhost:3105"
 echo -e "      - Email Service: http://localhost:3106"
 echo -e "      - Expiration Service: http://localhost:3107"
 echo -e ""
-echo -e "${GREEN}   🎨 Frontend:${NC}"
+echo -e "${GREEN}    Frontend:${NC}"
 echo -e "      - Next.js App: http://localhost:3000"
 echo -e ""
-echo -e "${YELLOW}📝 Logs are available in the logs/ directory${NC}"
-echo -e "${YELLOW}🛑 To stop all services, run: ./stop-local.sh${NC}"
+echo -e "${YELLOW} Logs are available in the logs/ directory${NC}"
+echo -e "${YELLOW} To stop all services, run: ./stop-local.sh${NC}"
 echo -e ""
 echo -e "${GREEN}🎉 Auction Website is ready! Visit http://localhost:3000${NC}"
 
 # Wait for services to start up
-echo -e "${YELLOW}⏳ Waiting for services to initialize...${NC}"
+echo -e "${YELLOW} Waiting for services to initialize...${NC}"
 sleep 15
 
 # Check if services are responding
-echo -e "${BLUE}🔍 Checking service health...${NC}"
-echo -e "${YELLOW}⏳ Checking API Gateway...${NC}"
+echo -e "${BLUE} Checking service health...${NC}"
+echo -e "${YELLOW} Checking API Gateway...${NC}"
 if nc -z localhost 3001 2>/dev/null; then
-    echo -e "${GREEN}✅ API Gateway is responding${NC}"
+    echo -e "${GREEN} API Gateway is responding${NC}"
 else
-    echo -e "${YELLOW}⏳ API Gateway is still starting...${NC}"
+    echo -e "${YELLOW} API Gateway is still starting...${NC}"
 fi
 
-echo -e "${YELLOW}⏳ Checking backend services...${NC}"
+echo -e "${YELLOW} Checking backend services...${NC}"
 for port in 3101 3102 3103 3104 3105 3106 3107; do
     if nc -z localhost $port 2>/dev/null; then
-        echo -e "${GREEN}✅ Service on port $port is responding${NC}"
+        echo -e "${GREEN} Service on port $port is responding${NC}"
     else
-        echo -e "${YELLOW}⏳ Service on port $port is still starting...${NC}"
+        echo -e "${YELLOW} Service on port $port is still starting...${NC}"
     fi
 done
 
-echo -e "${YELLOW}⏳ Checking frontend...${NC}"
+echo -e "${YELLOW} Checking frontend...${NC}"
 if nc -z localhost 3000 2>/dev/null; then
-    echo -e "${GREEN}✅ Frontend is responding${NC}"
+    echo -e "${GREEN} Frontend is responding${NC}"
 else
-    echo -e "${YELLOW}⏳ Frontend is still starting...${NC}"
+    echo -e "${YELLOW} Frontend is still starting...${NC}"
 fi
 
 # Keep script running and handle Ctrl+C
-trap 'echo -e "\n${YELLOW}🛑 Stopping services...${NC}"; ./stop-local.sh; exit 0' INT
-echo -e "${BLUE}🔄 Services are running. Press Ctrl+C to stop all services.${NC}"
+trap 'echo -e "\n${YELLOW} Stopping services...${NC}"; ./stop-local.sh; exit 0' INT
+echo -e "${BLUE} Services are running. Press Ctrl+C to stop all services.${NC}"
 
 # Keep the script running
 while true; do
