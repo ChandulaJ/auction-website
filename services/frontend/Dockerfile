@@ -2,21 +2,26 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy common package
-COPY common ./common
+# Install build dependencies for sqlite3 (and node-gyp)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    bash \
+    libc-dev \
+    && ln -sf python3 /usr/bin/python
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install
+# Copy package.json and package-lock.json first (for better layer caching)
+COPY package*.json ./
 
-# Copy the rest of the application
+# Install dependencies (use ci if you have lockfile, otherwise i)
+RUN npm ci
+
+# Copy application source
 COPY . .
 
-# Build the Next.js application
-RUN npm run build
-
-# Expose the port
+# Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Start dev server
+CMD ["npm", "run", "dev"]

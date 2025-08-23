@@ -1,15 +1,18 @@
-FROM node:18-alpine
+FROM node:alpine
+
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install --production
+# Copy package files for better layer caching
+COPY package*.json ./
 
-# Copy the rest of the application
+# Install dependencies using npm ci for faster, reliable installs
+RUN npm install
+
+# Copy application source
 COPY . .
 
-# Expose the port
+# Expose port
 EXPOSE 3107
 
 # Start the application
