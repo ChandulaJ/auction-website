@@ -24,7 +24,7 @@ echo -e "${GREEN} All services stopped successfully!${NC}"
 
 # Clean up logs if they exist
 if [ -d "logs" ]; then
-    echo -e "${YELLOW}🧹 Cleaning up log files...${NC}"
+    echo -e "${YELLOW} Cleaning up log files...${NC}"
     rm -rf logs/*.log
 fi
 

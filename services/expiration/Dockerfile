@@ -1,9 +1,16 @@
-FROM node:alpine
-ENV CI=true
- 
+FROM node:18-alpine
+
 WORKDIR /app
-COPY package.json .
-RUN npm install --only=prod
+
+# Copy package.json and install dependencies
+COPY package.json ./
+RUN npm install --production
+
+# Copy the rest of the application
 COPY . .
- 
+
+# Expose the port
+EXPOSE 3107
+
+# Start the application
 CMD ["npm", "start"]

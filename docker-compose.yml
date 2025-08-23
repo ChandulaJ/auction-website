@@ -1,0 +1,375 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  nats-streaming:
+    image: nats-streaming:0.24.6
+    container_name: auction-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: [
+      "-p", "4222",
+      "-m", "8222",
+      "-hbi", "5s",
+      "-hbt", "5s",
+      "-hbf", "2",
+      "-SD",
+      "-cid", "auction"
+    ]
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "4222"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: auction-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Database Services
+  auth-mysql:
+    image: mysql:8.0
+    container_name: auction-auth-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth
+    ports:
+      - "3306:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  bid-mysql:
+    image: mysql:8.0
+    container_name: auction-bid-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bid
+    ports:
+      - "3307:3306"
+    volumes:
+      - bid-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  listings-mysql:
+    image: mysql:8.0
+    container_name: auction-listings-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: listings
+    ports:
+      - "3308:3306"
+    volumes:
+      - listings-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  payments-mysql:
+    image: mysql:8.0
+    container_name: auction-payments-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: payments
+    ports:
+      - "3309:3306"
+    volumes:
+      - payments-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  profile-mysql:
+    image: mysql:8.0
+    container_name: auction-profile-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: profile
+    ports:
+      - "3310:3306"
+    volumes:
+      - profile-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Microservices
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: auction-api-gateway
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=api-gateway
+      - AUTH_SERVICE_URL=http://auth:3101
+      - BID_SERVICE_URL=http://bid:3102
+      - LISTINGS_SERVICE_URL=http://listings:3103
+      - PAYMENTS_SERVICE_URL=http://payments:3104
+      - PROFILE_SERVICE_URL=http://profile:3105
+      - EMAIL_SERVICE_URL=http://email:3106
+      - EXPIRATION_SERVICE_URL=http://expiration:3107
+      - CORS_ORIGIN=http://localhost:3000,http://frontend:3000
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+    restart: unless-stopped
+
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: auction-auth
+    ports:
+      - "3101:3101"
+    environment:
+      - NODE_ENV=development
+      - PORT=3101
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=auth
+      - MYSQL_HOST=auth-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=auth
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - JWT_KEY=auction-jwt-secret
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      auth-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  bid:
+    build:
+      context: ./services/bid
+      dockerfile: Dockerfile
+    container_name: auction-bid
+    ports:
+      - "3102:3102"
+    environment:
+      - NODE_ENV=development
+      - PORT=3102
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=bid
+      - MYSQL_HOST=bid-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=bid
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - JWT_KEY=auction-jwt-secret
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      bid-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  listings:
+    build:
+      context: ./services/listings
+      dockerfile: Dockerfile
+    container_name: auction-listings
+    ports:
+      - "3103:3103"
+    environment:
+      - NODE_ENV=development
+      - PORT=3103
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=listings
+      - MYSQL_HOST=listings-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=listings
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - JWT_KEY=auction-jwt-secret
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      listings-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  payments:
+    build:
+      context: ./services/payments
+      dockerfile: Dockerfile
+    container_name: auction-payments
+    ports:
+      - "3104:3104"
+    environment:
+      - NODE_ENV=development
+      - PORT=3104
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=payments
+      - MYSQL_HOST=payments-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=payments
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - JWT_KEY=auction-jwt-secret
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      payments-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  profile:
+    build:
+      context: ./services/profile
+      dockerfile: Dockerfile
+    container_name: auction-profile
+    ports:
+      - "3105:3105"
+    environment:
+      - NODE_ENV=development
+      - PORT=3105
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=profile
+      - MYSQL_HOST=profile-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=profile
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - JWT_KEY=auction-jwt-secret
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      profile-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  email:
+    build:
+      context: ./services/email
+      dockerfile: Dockerfile
+    container_name: auction-email
+    ports:
+      - "3106:3106"
+    environment:
+      - NODE_ENV=development
+      - PORT=3106
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=email
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+    restart: unless-stopped
+
+  expiration:
+    build:
+      context: ./services/expiration
+      dockerfile: Dockerfile
+    container_name: auction-expiration
+    ports:
+      - "3107:3107"
+    environment:
+      - NODE_ENV=development
+      - PORT=3107
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=expiration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - auction-network
+    depends_on:
+      nats-streaming:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    container_name: auction-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    networks:
+      - auction-network
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  auth-mysql-data:
+  bid-mysql-data:
+  listings-mysql-data:
+  payments-mysql-data:
+  profile-mysql-data:
+
+networks:
+  auction-network:
+    driver: bridge

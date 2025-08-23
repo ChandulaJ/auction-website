@@ -4,16 +4,13 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package.json ./
-RUN npm install
+RUN npm install --production
 
 # Copy the rest of the application
 COPY . .
 
-# Build the Next.js application
-RUN npm run build
-
 # Expose the port
-EXPOSE 3000
+EXPOSE 3001
 
 # Start the application
 CMD ["npm", "start"]
