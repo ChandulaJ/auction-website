@@ -172,15 +172,15 @@ class ApiGateway {
       res.status(response.status).json(response.data);
       
     } catch (error: any) {
-      console.error(`❌ Proxy Error for ${serviceName}:`, error.message);
+      console.error(` Proxy Error for ${serviceName}:`, error.message);
       
       if (error.response) {
         // The request was made and the server responded with a status code
-        console.log(`❌ Error status: ${error.response.status}`);
+        console.log(` Error status: ${error.response.status}`);
         res.status(error.response.status).json(error.response.data);
       } else if (error.request) {
         // The request was made but no response was received
-        console.log(`❌ No response from ${serviceName}`);
+        console.log(` No response from ${serviceName}`);
         res.status(503).json({
           error: 'Service Unavailable',
           message: `${serviceName} service is currently unavailable`,
@@ -188,7 +188,7 @@ class ApiGateway {
         });
       } else {
         // Something happened in setting up the request
-        console.log(`❌ Request setup error: ${error.message}`);
+        console.log(` Request setup error: ${error.message}`);
         res.status(500).json({
           error: 'Internal Server Error',
           message: 'Failed to proxy request',
@@ -201,7 +201,7 @@ class ApiGateway {
   private setupErrorHandling(): void {
     // Global error handler
     this.app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
-      console.error('❌ Gateway Error:', err);
+      console.error(' Gateway Error:', err);
       
       res.status(err.status || 500).json({
         error: 'Internal Server Error',
@@ -248,7 +248,7 @@ class ApiGateway {
       });
 
     } catch (error) {
-      console.error('❌ Failed to start API Gateway:', error);
+      console.error(' Failed to start API Gateway:', error);
       process.exit(1);
     }
   }

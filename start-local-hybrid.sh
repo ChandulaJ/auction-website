@@ -33,7 +33,7 @@ wait_for_service() {
         attempt=$((attempt + 1))
     done
     
-    echo -e "${RED}❌ $service_name failed to start after $max_attempts attempts${NC}"
+    echo -e "${RED} $service_name failed to start after $max_attempts attempts${NC}"
     return 1
 }
 
@@ -41,17 +41,17 @@ wait_for_service() {
 echo -e "${BLUE} Checking required tools...${NC}"
 
 if ! command_exists docker; then
-    echo -e "${RED}❌ Docker is not installed. Please install Docker first.${NC}"
+    echo -e "${RED} Docker is not installed. Please install Docker first.${NC}"
     exit 1
 fi
 
 if ! command_exists node; then
-    echo -e "${RED}❌ Node.js is not installed. Please install Node.js first.${NC}"
+    echo -e "${RED} Node.js is not installed. Please install Node.js first.${NC}"
     exit 1
 fi
 
 if ! command_exists npm; then
-    echo -e "${RED}❌ npm is not installed. Please install npm first.${NC}"
+    echo -e "${RED} npm is not installed. Please install npm first.${NC}"
     exit 1
 fi
 

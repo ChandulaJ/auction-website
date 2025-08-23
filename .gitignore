@@ -4,7 +4,7 @@ coverage
 /logs
 
 #env
-.env.local
+.env.local.backup
 
 # Service-specific environment files (for production, keep .env.example)
 services/*/.env

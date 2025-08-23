@@ -51,13 +51,13 @@ export const syncExistingData = async (): Promise<void> => {
           );
         }
       } catch (error) {
-        console.error(`❌ Failed to sync listing ${listingData.id}:`, error);
+        console.error(` Failed to sync listing ${listingData.id}:`, error);
       }
     }
 
     console.log(' Listing sync complete!');
   } catch (error) {
-    console.error('❌ Failed to sync listings:', error);
+    console.error(' Failed to sync listings:', error);
     // Don't throw error to prevent service from crashing
   }
 };
