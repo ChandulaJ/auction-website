@@ -2,3 +2,12 @@ node_modules
 coverage
 .next
 /logs
+
+#env
+.env.local
+
+# Service-specific environment files (for production, keep .env.example)
+services/*/.env
+services/*/.env.local
+services/*/.env.production
+services/*/.env.development

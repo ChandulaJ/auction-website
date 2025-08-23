@@ -105,9 +105,12 @@ cd ../..
 echo -e "${GREEN} Starting API Gateway on port 3001...${NC}"
 cd services/api-gateway
 (
-    source ../../.env.local
-    export $(cat ../../.env.local | grep -v '^#' | xargs)
-    export PORT=3001
+    # Load service-specific environment variables
+    if [ -f ".env" ]; then
+        source .env
+        export $(cat .env | grep -v '^#' | xargs)
+    fi
+    export NATS_CLIENT_ID="api-gateway-$(date +%s)-$$"
     npm start
 ) > ../../logs/api-gateway.log 2>&1 &
 pids+=($!)
@@ -118,20 +121,19 @@ sleep 3
 
 # Start backend services
 backend_services=("auth" "bid" "listings" "payments" "profile" "email" "expiration")
-service_ports=("3101" "3102" "3103" "3104" "3105" "3106" "3107")
 
-for i in "${!backend_services[@]}"; do
-    service="${backend_services[$i]}"
-    port="${service_ports[$i]}"
-    echo -e "${GREEN} Starting $service service on port $port...${NC}"
+for service in "${backend_services[@]}"; do
+    echo -e "${GREEN} Starting $service service...${NC}"
     cd services/$service
     
-    # Source environment variables and start service in background
+    # Source service-specific environment variables and start service in background
     (
-        source ../../.env.local
-        export $(cat ../../.env.local | grep -v '^#' | xargs)
+        # Load service-specific environment variables
+        if [ -f ".env" ]; then
+            source .env
+            export $(cat .env | grep -v '^#' | xargs)
+        fi
         export NATS_CLIENT_ID="$service-$(date +%s)-$$"
-        export PORT="$port"
         npm start
     ) > ../../logs/$service.log 2>&1 &
     
@@ -146,10 +148,11 @@ done
 echo -e "${GREEN} Starting frontend service on port 3000...${NC}"
 cd services/frontend
 (
-    # Set frontend-specific environment variables
-    export NEXT_PUBLIC_API_URL=http://localhost:3001
-    export NODE_ENV=development
-    export PORT=3000
+    # Load service-specific environment variables
+    if [ -f ".env" ]; then
+        source .env
+        export $(cat .env | grep -v '^#' | xargs)
+    fi
     npm run dev
 ) > ../../logs/frontend.log 2>&1 &
 pids+=($!)
