@@ -134,9 +134,12 @@ services:
 
   # Microservices
   api-gateway:
+    image: pramithamj/auction-website/api-gateway:latest
     build:
       context: ./services/api-gateway
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/api-gateway:latest
     container_name: auction-api-gateway
     ports:
       - "3001:3001"
@@ -162,9 +165,12 @@ services:
     restart: unless-stopped
 
   auth:
+    image: pramithamj/auction-website/auth:latest
     build:
       context: ./services/auth
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/auth:latest
     container_name: auction-auth
     ports:
       - "3101:3101"
@@ -190,9 +196,12 @@ services:
     restart: unless-stopped
 
   bid:
+    image: pramithamj/auction-website/bid:latest
     build:
       context: ./services/bid
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/bid:latest
     container_name: auction-bid
     ports:
       - "3102:3102"
@@ -218,9 +227,12 @@ services:
     restart: unless-stopped
 
   listings:
+    image: pramithamj/auction-website/listings:latest
     build:
       context: ./services/listings
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/listings:latest
     container_name: auction-listings
     ports:
       - "3103:3103"
@@ -246,9 +258,12 @@ services:
     restart: unless-stopped
 
   payments:
+    image: pramithamj/auction-website/payments:latest
     build:
       context: ./services/payments
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/payments:latest
     container_name: auction-payments
     ports:
       - "3104:3104"
@@ -274,9 +289,12 @@ services:
     restart: unless-stopped
 
   profile:
+    image: pramithamj/auction-website/profile:latest
     build:
       context: ./services/profile
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/profile:latest
     container_name: auction-profile
     ports:
       - "3105:3105"
@@ -302,9 +320,12 @@ services:
     restart: unless-stopped
 
   email:
+    image: pramithamj/auction-website/email:latest
     build:
       context: ./services/email
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/email:latest
     container_name: auction-email
     ports:
       - "3106:3106"
@@ -322,9 +343,12 @@ services:
     restart: unless-stopped
 
   expiration:
+    image: pramithamj/auction-website/expiration:latest
     build:
       context: ./services/expiration
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/expiration:latest
     container_name: auction-expiration
     ports:
       - "3107:3107"
@@ -346,9 +370,12 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: pramithamj/auction-website/frontend:latest
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
+      tags:
+        - pramithamj/auction-website/frontend:latest
     container_name: auction-frontend
     ports:
       - "3000:3000"
