@@ -141,22 +141,13 @@ services:
       tags:
         - pramithamj/auction-website/api-gateway:latest
     container_name: auction-api-gateway
+    env_file:
+      - .env
     ports:
       - "3001:3001"
     environment:
-      - NODE_ENV=development
       - PORT=3001
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=api-gateway
-      - AUTH_SERVICE_URL=http://auth:3101
-      - BID_SERVICE_URL=http://bid:3102
-      - LISTINGS_SERVICE_URL=http://listings:3103
-      - PAYMENTS_SERVICE_URL=http://payments:3104
-      - PROFILE_SERVICE_URL=http://profile:3105
-      - EMAIL_SERVICE_URL=http://email:3106
-      - EXPIRATION_SERVICE_URL=http://expiration:3107
-      - CORS_ORIGIN=http://localhost:3000,http://frontend:3000
     networks:
       - auction-network
     depends_on:
@@ -172,20 +163,16 @@ services:
       tags:
         - pramithamj/auction-website/auth:latest
     container_name: auction-auth
+    env_file:
+      - .env
     ports:
       - "3101:3101"
     environment:
-      - NODE_ENV=development
       - PORT=3101
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=auth
       - MYSQL_HOST=auth-mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=auth
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
-      - JWT_KEY=auction-jwt-secret
     networks:
       - auction-network
     depends_on:
@@ -203,20 +190,16 @@ services:
       tags:
         - pramithamj/auction-website/bid:latest
     container_name: auction-bid
+    env_file:
+      - .env
     ports:
       - "3102:3102"
     environment:
-      - NODE_ENV=development
       - PORT=3102
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=bid
       - MYSQL_HOST=bid-mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=bid
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
-      - JWT_KEY=auction-jwt-secret
     networks:
       - auction-network
     depends_on:
@@ -234,20 +217,16 @@ services:
       tags:
         - pramithamj/auction-website/listings:latest
     container_name: auction-listings
+    env_file:
+      - .env
     ports:
       - "3103:3103"
     environment:
-      - NODE_ENV=development
       - PORT=3103
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=listings
       - MYSQL_HOST=listings-mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=listings
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
-      - JWT_KEY=auction-jwt-secret
     networks:
       - auction-network
     depends_on:
@@ -265,20 +244,16 @@ services:
       tags:
         - pramithamj/auction-website/payments:latest
     container_name: auction-payments
+    env_file:
+      - .env
     ports:
       - "3104:3104"
     environment:
-      - NODE_ENV=development
       - PORT=3104
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=payments
       - MYSQL_HOST=payments-mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=payments
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
-      - JWT_KEY=auction-jwt-secret
     networks:
       - auction-network
     depends_on:
@@ -296,20 +271,16 @@ services:
       tags:
         - pramithamj/auction-website/profile:latest
     container_name: auction-profile
+    env_file:
+      - .env
     ports:
       - "3105:3105"
     environment:
-      - NODE_ENV=development
       - PORT=3105
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=profile
       - MYSQL_HOST=profile-mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=profile
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=password
-      - JWT_KEY=auction-jwt-secret
     networks:
       - auction-network
     depends_on:
@@ -327,13 +298,12 @@ services:
       tags:
         - pramithamj/auction-website/email:latest
     container_name: auction-email
+    env_file:
+      - .env
     ports:
       - "3106:3106"
     environment:
-      - NODE_ENV=development
       - PORT=3106
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=email
     networks:
       - auction-network
@@ -350,16 +320,13 @@ services:
       tags:
         - pramithamj/auction-website/expiration:latest
     container_name: auction-expiration
+    env_file:
+      - .env
     ports:
       - "3107:3107"
     environment:
-      - NODE_ENV=development
       - PORT=3107
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=expiration
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     networks:
       - auction-network
     depends_on:
@@ -377,12 +344,12 @@ services:
       tags:
         - pramithamj/auction-website/frontend:latest
     container_name: auction-frontend
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
       - PORT=3000
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
     networks:
       - auction-network
     depends_on:
