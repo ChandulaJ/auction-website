@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { NextPageContext } from 'next';
 import Head from 'next/head';
 import React, { useContext, useState } from 'react';
@@ -9,6 +8,7 @@ import DashboardTabs from '../../components/DashboardTabs';
 import Error from '../../components/ErrorMessage';
 import ListingDashboardTableRow from '../../components/ListingDashboardTableRow';
 import AppContext from '../../context/app-context';
+import buildClient from '../../api/base-client';
 
 const Expired = ({ listingsData }) => {
   const {
@@ -18,7 +18,8 @@ const Expired = ({ listingsData }) => {
 
   const onDelete = async (listingId) => {
     try {
-      await axios.delete(`/api/listings/${listingId}`);
+      const client = buildClient({});
+      await client.delete(`/api/listings/${listingId}`);
       setListings(listings.filter((listing) => listing.id !== listingId));
       toast.success('Sucessfully deleted listing!');
     } catch (err) {
@@ -96,12 +97,13 @@ const Expired = ({ listingsData }) => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {listings.map((listing) => {
+                    {listings.map((listing) => (
                       <ListingDashboardTableRow
+                        key={listing.id}
                         listing={listing}
                         onDelete={() => onDelete(listing.id)}
-                      />;
-                    })}
+                      />
+                    ))}
                     {!listings.length && (
                       <p className="m-4 max-w-2xl text-l">
                         You have no expired listings.

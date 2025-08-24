@@ -1,19 +1,19 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
+import buildClient from '../api/base-client';
 import AppContext from '../context/app-context';
 import ClickAwayButton from './ClickAwayButton';
 
-const StyledUserMenu = styled.div(xw`
+const StyledUserMenu = styled.div`${tw`
     ml-4 
     relative 
     flex-shrink-0
-`);
+`}`;
 
-const StyledButton = styled.button(xw`
+const StyledButton = styled.button`${tw`
     bg-white 
     rounded-full 
     flex 
@@ -22,19 +22,19 @@ const StyledButton = styled.button(xw`
     focus:ring-2 
     focus:ring-offset-2 
     focus:ring-indigo-500
-`);
+`}`;
 
-const StyledSpan = styled.span(xw`
+const StyledSpan = styled.span`${tw`
     sr-only
-`);
+`}`;
 
-const StyledImg = styled.img(xw`
+const StyledImg = styled.img`${tw`
     h-8 
     w-8 
     rounded-full
-`);
+`}`;
 
-const StyledLinksContainer = styled.div(xw`
+const StyledLinksContainer = styled.div`${tw`
     origin-top-right 
     absolute 
     right-0 
@@ -48,16 +48,16 @@ const StyledLinksContainer = styled.div(xw`
     ring-black 
     ring-opacity-5 
     z-50
-`);
+`}`;
 
-const StyledAnchor = styled.a(xw`
+const StyledAnchor = styled.a`${tw`
     block 
     px-4 
     py-2 
     text-sm 
     text-gray-700 
     hover:bg-gray-100
-`);
+`}`;
 
 const UserMenu = () => {
   const {
@@ -74,7 +74,8 @@ const UserMenu = () => {
 
   const onClick = async () => {
     try {
-      await axios.post('/api/auth/signout');
+      const client = buildClient({});
+      await client.post('/api/auth/signout');
       setAuth({ isAuthenticated: false, currentUser: null });
     } catch (err) {}
   };

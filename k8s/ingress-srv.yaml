@@ -3,58 +3,59 @@ kind: Ingress
 metadata:
   name: ingress-srv
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: 'true'
-    nginx.ingress.kubernetes.io/websocket-services: 'listing-srv'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/websocket-services: 'listings-srv'
 spec:
+  ingressClassName: nginx
   rules:
     - host: auctionweb.site
       http:
         paths:
           - path: /api/auth/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: auth-srv
                 port:
                   number: 3000
           - path: /api/bids/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: bid-srv
                 port:
                   number: 3000
           - path: /api/listings/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: listings-srv
                 port:
                   number: 3000
           - path: /api/payments/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: payments-srv
                 port:
                   number: 3000
           - path: /api/profile/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: profile-srv
                 port:
                   number: 3000
           - path: /socket.io/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: listings-srv
                 port:
                   number: 3000
           - path: /?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-srv

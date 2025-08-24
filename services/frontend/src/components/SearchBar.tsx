@@ -1,31 +1,31 @@
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
 import SearchIcon from './SearchIcon';
 
-const StyledSearchBar = styled.div(xw`
+const StyledSearchBar = styled.div`${tw`
     flex-1 
     flex
     items-center 
     justify-center 
     lg:ml-6 
     lg:justify-end 
-`);
+`}`;
 
-const StyledLabel = styled.label(xw`
+const StyledLabel = styled.label`${tw`
     sr-only    
-`);
+`}`;
 
-const StyledSearchContent = styled.div(xw`
+const StyledSearchContent = styled.div`${tw`
     max-w-lg 
     w-full 
     lg:max-w-xs 
     relative
-`);
+`}`;
 
-const StyledInput = styled.input(xw`
+const StyledInput = styled.input`${tw`
     block 
     w-full 
     pl-10 
@@ -43,7 +43,7 @@ const StyledInput = styled.input(xw`
     focus:ring-indigo-500 
     focus:border-indigo-500 
     sm:text-sm
-`);
+`}`;
 
 const SearchBar = () => {
   const [search, setSearch] = useState('');

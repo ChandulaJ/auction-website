@@ -48,9 +48,10 @@ import { natsWrapper } from './nats-wrapper';
     await db.sync();
     console.log('Conneted to MySQL');
 
-    app.listen(3000, () => console.log('Listening on port 3000!'));
+    const port = process.env.PORT || 3104;
+    app.listen(port, () => console.log(`Listening on port ${port}!`));
 
-    console.log('The auth service has started up successfully');
+    console.log('The payments service has started up successfully');
   } catch (err) {
     console.error(err);
     process.exit(0);

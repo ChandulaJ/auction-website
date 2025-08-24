@@ -4,7 +4,7 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
 import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 import * as Yup from 'yup';
 
 import Error from '../../components/ErrorMessage';
@@ -12,11 +12,11 @@ import SettingsBreadcrumbs from '../../components/SettingsBreadcrumbs';
 import SettingsTabs from '../../components/SettingsTabs';
 import AppContext from '../../context/app-context';
 
-const StyledErrorMessage = styled.div(xw`
+const StyledErrorMessage = styled.div`${tw`
     text-sm
     text-red-600
     my-0.5
-`);
+`}`;
 
 const validationSchema = Yup.object({
   about: Yup.string().max(5000, 'Must be less than 5000 characters'),

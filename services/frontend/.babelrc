@@ -4,7 +4,6 @@
         "@emotion/babel-preset-css-prop"
     ],
     "plugins": [
-        "macros",
-        "xwind/babel"
+        "babel-plugin-macros"
     ]
 }

@@ -1,20 +1,20 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 import * as Yup from 'yup';
 
 import AppContext from '../../context/app-context';
+import buildClient from '../../api/base-client';
 
-const StyledErrorMessage = styled.div(xw`
+const StyledErrorMessage = styled.div`${tw`
     text-sm
     text-red-600
     my-0.5
-`);
+`}`;
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -45,7 +45,8 @@ const SignUp = () => {
     setIsSigningUp(true);
 
     try {
-      const { data } = await axios.post('/api/auth/signup', body);
+      const client = buildClient({});
+      const { data } = await client.post('/api/auth/signup', body);
       setAuth({ isAuthenticated: true, currentUser: data });
       toast.success('Sucessfully signed up!');
       router.push('/');

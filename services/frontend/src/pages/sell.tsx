@@ -1,11 +1,10 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Head from 'next/head';
 import Router from 'next/router';
 import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 import * as Yup from 'yup';
 
 import Breadcrumb from '../components/Breadcrumb';
@@ -14,19 +13,22 @@ import DatePicker from '../components/DatePicker';
 import Error from '../components/ErrorMessage';
 import ImageUpload from '../components/ImageUpload';
 import AppContext from '../context/app-context';
+import buildClient from '../api/base-client';
 
-const StyledErrorMessage = styled.div(xw`
+const StyledErrorMessage = styled.div`${tw`
     text-sm
     text-red-600
     my-0.5
-`);
+`}`;
 
 const validationSchema = Yup.object({
   title: Yup.string()
-    .max(15, 'Must be 15 characters or less')
+    .min(5, 'The listing title must be between 5 and 1000 characters')
+    .max(1000, 'The listing title must be between 5 and 1000 characters')
     .required('Required'),
   description: Yup.string()
-    .max(5000, 'Must be 5000 characters or less')
+    .min(5, 'The listing description must be between 5 and 500 characters')
+    .max(500, 'The listing description must be between 5 and 500 characters')
     .required('Required'),
   image: Yup.mixed().required('Required'),
   price: Yup.string()
@@ -43,7 +45,7 @@ const validationSchema = Yup.object({
     ),
 });
 
-const Sell = () => {
+const Sell = (): JSX.Element => {
   const {
     auth: { isAuthenticated },
   } = useContext(AppContext);
@@ -53,10 +55,39 @@ const Sell = () => {
     setIsSubmitting(true);
 
     try {
-      body.price *= 100;
+      // Convert price to cents and ensure it's a valid number
+      const priceInCents = Math.round(parseFloat(body.price) * 100);
+      if (isNaN(priceInCents) || priceInCents <= 0) {
+        toast.error('Please enter a valid price');
+        setIsSubmitting(false);
+        return;
+      }
+
       const formData = new FormData();
-      Object.keys(body).forEach((key) => formData.append(key, body[key]));
-      const { data } = await axios.post('/api/listings', formData);
+      Object.keys(body).forEach((key) => {
+        if (key === 'price') {
+          formData.append(key, priceInCents.toString());
+        } else if (key === 'expiresAt') {
+          // Ensure date is properly formatted as ISO string
+          const dateValue = body[key];
+          if (dateValue instanceof Date) {
+            formData.append(key, dateValue.toISOString());
+          } else {
+            formData.append(key, new Date(dateValue).toISOString());
+          }
+        } else {
+          formData.append(key, body[key]);
+        }
+      });
+      
+      console.log('FormData entries:');
+      // Log FormData entries for debugging
+      Array.from(formData.entries()).forEach(([key, value]) => {
+        console.log(key, value);
+      });
+      
+      const client = buildClient({});
+      const { data } = await client.post('/api/listings', formData);
       toast.success('Sucessfully listed item for sale!');
       Router.push(`/listings/${data.slug}`);
     } catch (err) {

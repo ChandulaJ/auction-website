@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { ListingStatus } from '@jjmauction/common';
 import { BuildOptions, DataTypes, Model, Sequelize, UUIDV4 } from 'sequelize';
 import SequelizeSlugify from 'sequelize-slugify';
@@ -70,11 +71,11 @@ const ListingFactory = (sequelize: Sequelize): ListingStatic => {
         allowNull: false,
       },
       smallImage: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       largeImage: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       description: {

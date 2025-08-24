@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
-import axios from 'axios';
 import React, { useContext, useState } from 'react';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
+import buildClient from '../api/base-client';
 import AppContext from '../context/app-context';
 import CloseIcon from './CloseIcon';
 import HamburgerMenuIcon from './HamburgerMenuIcon';
@@ -11,45 +11,58 @@ import NavbarTab from './NavbarTab';
 import SearchBar from './SearchBar';
 import DesktopUserMenu from './UserMenu';
 
-const StyledNavbar = styled.nav(xw`
+const StyledNavbar = styled.nav`
+  ${tw`
     bg-white 
     shadow
-`);
+`}
+`;
 
-const StyledDesktopContentContainer = styled.div(xw`
+const StyledDesktopContentContainer = styled.div`
+  ${tw`
     max-w-7xl 
     mx-auto 
     px-2 
     sm:px-4 
     lg:px-8
-`);
+`}
+`;
 
-const StyledDesktopContent = styled.div(xw`
+const StyledDesktopContent = styled.div`
+  ${tw`
     flex 
     justify-between 
     h-16
-`);
+`}
+`;
 
-const StyledDesktopNavigationTabsContainer = styled.div(xw`
+const StyledDesktopNavigationTabsContainer = styled.div`
+  ${tw`
     flex 
     px-2 
     lg:px-0
-`);
+`}
+`;
 
-const StyledDesktopNavigationTabs = styled.div(xw`
+const StyledDesktopNavigationTabs = styled.div`
+  ${tw`
     hidden 
     lg:ml-6 
     lg:flex 
     lg:space-x-8
-`);
+`}
+`;
 
-const StyledMobileHamburgerMenuContainer = styled.div(xw`
+const StyledMobileHamburgerMenuContainer = styled.div`
+  ${tw`
     flex 
     items-center 
     lg:hidden
-`);
+`}
+`;
 
-const StyledMobileHamburgerMenuButton = styled.button(xw`
+const StyledMobileHamburgerMenuButton = styled.button`
+  ${tw`
     inline-flex 
     items-center 
     justify-center 
@@ -62,56 +75,76 @@ const StyledMobileHamburgerMenuButton = styled.button(xw`
     focus:ring-2 
     focus:ring-inset 
     focus:ring-indigo-500
-`);
+`}
+`;
 
-const StyledSpan = styled.span(xw`
+const StyledSpan = styled.span`
+  ${tw`
     sr-only
-`);
+`}
+`;
 
-const StyledNavbarButtonsContainer = styled.div(xw`
+const StyledNavbarButtonsContainer = styled.div`
+  ${tw`
     hidden 
     lg:ml-4 
     lg:flex 
     lg:items-center
-`);
+`}
+`;
 
-const StyledMobileNavContainer = styled.div(xw`
+const StyledMobileNavContainer = styled.div`
+  ${tw`
     lg:hidden
-`);
+`}
+`;
 
-const StyledMobileNavigationTabsContainer = styled.div(xw`
+const StyledMobileNavigationTabsContainer = styled.div`
+  ${tw`
     pt-2 
     pb-3 
     space-y-1
-`);
+`}
+`;
 
-const StyledInformationContainer = styled.div(xw`
+const StyledInformationContainer = styled.div`
+  ${tw`
     ml-3
-`);
+`}
+`;
 
-const StyledProfileImgContainer = styled.div(xw`
+const StyledProfileImgContainer = styled.div`
+  ${tw`
     flex-shrink-0
-`);
+`}
+`;
 
-const StyledProfileImg = styled.img(xw`
+const StyledProfileImg = styled.img`
+  ${tw`
     h-10 
     w-10 
     rounded-full
-`);
+`}
+`;
 
-const StyledName = styled.div(xw`
+const StyledName = styled.div`
+  ${tw`
     text-base 
     font-medium 
     text-gray-800
-`);
+`}
+`;
 
-const StyledEmail = styled.div(xw`
+const StyledEmail = styled.div`
+  ${tw`
     text-sm 
     font-medium 
     text-gray-500
-`);
+`}
+`;
 
-const StyledSignOutButton = styled.button(xw`
+const StyledSignOutButton = styled.button`
+  ${tw`
     border-transparent 
     text-gray-600 
     hover:bg-gray-50 
@@ -124,22 +157,27 @@ const StyledSignOutButton = styled.button(xw`
     border-l-4 
     text-base 
     font-medium
-`);
+`}
+`;
 
-const StyledMobileContent = styled.div(xw`
+const StyledMobileContent = styled.div`
+  ${tw`
     pt-4 
     pb-3 
     border-t 
     border-gray-200
-`);
+`}
+`;
 
-const StyledProfileInformation = styled.div(xw`
+const StyledProfileInformation = styled.div`
+  ${tw`
     flex 
     items-center 
     px-4
-`);
+`}
+`;
 
-const Navbar = () => {
+const Navbar = (): JSX.Element => {
   const {
     auth: { isAuthenticated, currentUser },
     setAuth,
@@ -148,7 +186,8 @@ const Navbar = () => {
 
   const onClick = async () => {
     try {
-      await axios.post('/api/auth/signout');
+      const client = buildClient({});
+      await client.post('/api/auth/signout');
       setAuth({ isAuthenticated: false, currentUser: null });
     } catch (err) {}
   };

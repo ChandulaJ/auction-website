@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
-import xw from 'xwind/macro';
+import tw from 'twin.macro';
 
-const StyledSvg = styled.svg(xw`
+const StyledSvg = styled.svg`${tw`
     h-6 
     w-6
-`);
+`}`;
 
 const NotificationsIcon = () => {
   return (

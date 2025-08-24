@@ -1,5 +1,4 @@
 import { ListingStatus } from '@jjmauction/common';
-import axios from 'axios';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
@@ -8,13 +7,15 @@ import { toast } from 'react-toastify';
 import AppContext from '../context/app-context';
 import { centsToDollars } from '../utils/cents-to-dollars';
 import Countdown from './Countdown';
+import buildClient from '../api/base-client';
 
 const BidDashboardTableRow = ({ bid, onDelete }) => {
   const { auth } = useContext(AppContext);
 
   const createPayment = async ({ id }) => {
     try {
-      await axios.post('/api/payments', {
+      const client = buildClient({});
+      await client.post('/api/payments', {
         listingId: bid.listing.id,
         token: id,
       });

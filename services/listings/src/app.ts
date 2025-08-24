@@ -20,6 +20,11 @@ app.use(json());
 app.use(cookieSession({ signed: false, secure: false }));
 app.use(currentUser);
 
+// Health check endpoint
+app.get('/healthcheck', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'listings' });
+});
+
 app.use(deleteListingRouter);
 app.use(createListingRouter);
 app.use(getListingsRouter);
