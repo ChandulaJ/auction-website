@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: auction-frontend:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://api-gateway-srv:3001"
+            - name: SERVER_API_URL
+              value: "http://api-gateway-srv:3001"
+            - name: WATCHPACK_POLLING
+              value: "true"
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: frontend
+  ports:
+    - name: frontend
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

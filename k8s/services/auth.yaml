@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+        tier: application
+    spec:
+      containers:
+        - name: auth
+          image: auction-auth:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3101"
+            - name: NODE_ENV
+              value: "development"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: AUTH_MYSQL_URI
+              value: "mysql://root:password@auth-mysql-srv:3306/auth"
+            - name: NATS_URL
+              value: "nats://nats-streaming-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "auction"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - containerPort: 3101
+          livenessProbe:
+            httpGet:
+              path: /api/auth/health
+              port: 3101
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/auth/health
+              port: 3101
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: auth
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3101
+      targetPort: 3101

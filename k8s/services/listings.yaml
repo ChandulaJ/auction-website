@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listings-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: listings
+  template:
+    metadata:
+      labels:
+        app: listings
+        tier: application
+    spec:
+      containers:
+        - name: listings
+          image: auction-listings:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3103"
+            - name: NODE_ENV
+              value: "development"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: LISTINGS_MYSQL_URI
+              value: "mysql://root:password@listings-mysql-srv:3306/listings"
+            - name: NATS_URL
+              value: "nats://nats-streaming-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "auction"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_S3_BUCKET_NAME
+              value: "cloud-storage-new123"
+          ports:
+            - containerPort: 3103
+          livenessProbe:
+            httpGet:
+              path: /api/listings/health
+              port: 3103
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/listings/health
+              port: 3103
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: listings-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: listings
+  ports:
+    - name: listings
+      protocol: TCP
+      port: 3103
+      targetPort: 3103

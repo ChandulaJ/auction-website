@@ -1,5 +1,6 @@
-import { EmailCreatedListener } from './events/listeners/email-created-listener';
+import { EmailCreatedListener, getEmailHealthStatus, testEmailConnectivity } from './events/listeners/email-created-listener-with-circuit-breaker';
 import { natsWrapper } from './nats-wrapper';
+import express from 'express';
 
 (async () => {
   try {
@@ -38,6 +39,32 @@ import { natsWrapper } from './nats-wrapper';
 
     process.on('SIGINT', () => natsWrapper.client.close());
     process.on('SIGTERM', () => natsWrapper.client.close());
+
+    // Create express app for health endpoints
+    const app = express();
+    
+    // Health check endpoint with circuit breaker status
+    app.get('/health', async (req, res) => {
+      const emailHealth = getEmailHealthStatus();
+      const connectivityTest = await testEmailConnectivity();
+      
+      res.status(emailHealth.isHealthy ? 200 : 503).json({
+        status: emailHealth.isHealthy ? 'healthy' : 'unhealthy',
+        service: 'email',
+        timestamp: new Date().toISOString(),
+        smtp: {
+          isHealthy: emailHealth.isHealthy,
+          connectivityTest,
+          circuitBreaker: emailHealth.stats
+        }
+      });
+    });
+
+    // Start HTTP server for health checks
+    const port = process.env.PORT || 3106;
+    app.listen(port, () => {
+      console.log(`[Email Service] Health endpoint listening on port ${port}`);
+    });
 
     await new EmailCreatedListener(natsWrapper.client).listen();
 

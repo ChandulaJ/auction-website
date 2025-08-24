@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile
+  template:
+    metadata:
+      labels:
+        app: profile
+        tier: application
+    spec:
+      containers:
+        - name: profile
+          image: auction-profile:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3105"
+            - name: NODE_ENV
+              value: "development"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: PROFILE_MYSQL_URI
+              value: "mysql://root:password@profile-mysql-srv:3306/profile"
+            - name: NATS_URL
+              value: "nats://nats-streaming-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "auction"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - containerPort: 3105
+          livenessProbe:
+            httpGet:
+              path: /api/profile/health
+              port: 3105
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/profile/health
+              port: 3105
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: profile
+  ports:
+    - name: profile
+      protocol: TCP
+      port: 3105
+      targetPort: 3105
