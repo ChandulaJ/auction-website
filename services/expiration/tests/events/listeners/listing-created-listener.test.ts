@@ -7,14 +7,15 @@ import { natsWrapper } from '../../../src/nats-wrapper';
 const setup = () => {
   const listener = new ListingCreatedListener(natsWrapper.client);
 
-  const data: ListingCreatedEvent['data'] = {
+  const data = {
     id: uuidv4(),
     userId: uuidv4(),
     title: 'test title',
     slug: 'test-title',
     price: 100,
     expiresAt: new Date(),
-  };
+    version: 0,
+  } as ListingCreatedEvent['data'];
 
   // @ts-ignore
   const msg: Message = {

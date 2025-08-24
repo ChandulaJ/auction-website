@@ -1,17 +1,27 @@
 FROM node:18-alpine
-ENV CI=true
+
 WORKDIR /app
 
-# Copy the package.json and package-lock.json for better dependency resolution
-COPY package.json package-lock.json ./
+# Install build dependencies for sqlite3 (and node-gyp)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    bash \
+    libc-dev \
+    && ln -sf python3 /usr/bin/python
 
-# Install only production dependencies
-RUN rm -rf node_modules package-lock.json && \
-    npm install --only=production --no-audit --no-fund && \
-    npm cache clean --force
+# Copy package.json and package-lock.json first (for better layer caching)
+COPY package*.json ./
 
-# Copy the built application from local build
-COPY .next ./.next
-COPY public ./public
+# Install dependencies (use ci if you have lockfile, otherwise i)
+RUN npm ci
 
-CMD ["npm", "run", "start"]
+# Copy application source
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start dev server
+CMD ["npm", "run", "dev"]

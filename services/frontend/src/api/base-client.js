@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const buildClient = (context) => {
   if(typeof window === 'undefined'){
-    // Server-side rendering - use API Gateway
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Server-side rendering - use internal Docker hostname for SSR
+    const baseURL = process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     return axios.create({
       baseURL: baseURL,
       headers: context.req.headers,

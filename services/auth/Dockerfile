@@ -1,8 +1,19 @@
-FROM node:alpine
+FROM node:18-alpine
 
 WORKDIR /app
-COPY package.json .
-RUN npm install --only=prod
+
+# Install system dependencies required for node-gyp (sqlite3 needs this)
+RUN apk add --no-cache python3 make g++ 
+
+# Copy package.json and install deps
+COPY package*.json ./
+RUN npm install
+
+# Copy application source
 COPY . .
 
-CMD ["npm", "run", "start"]
+# Expose port
+EXPOSE 3101
+
+# Start the application
+CMD ["npm", "start"]

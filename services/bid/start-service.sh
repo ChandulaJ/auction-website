@@ -30,7 +30,7 @@ fi
 
 # Load environment variables
 if [ -f ".env" ]; then
-    echo -e "${YELLOW}🔧 Loading environment variables from .env${NC}"
+    echo -e "${YELLOW} Loading environment variables from .env${NC}"
     source .env
     export $(cat .env | grep -v '^#' | xargs)
 else

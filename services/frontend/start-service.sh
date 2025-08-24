@@ -29,7 +29,7 @@ fi
 
 # Load environment variables
 if [ -f ".env" ]; then
-    echo -e "${YELLOW}🔧 Loading environment variables from .env${NC}"
+    echo -e "${YELLOW} Loading environment variables from .env${NC}"
     source .env
     export $(cat .env | grep -v '^#' | xargs)
 else
@@ -38,7 +38,7 @@ fi
 
 echo -e "${GREEN} Starting Frontend Service on port ${PORT:-3000}...${NC}"
 echo -e "${BLUE} Application URL: http://localhost:${PORT:-3000}${NC}"
-echo -e "${YELLOW}🔗 API Gateway: ${NEXT_PUBLIC_API_URL}${NC}"
+echo -e "${YELLOW} API Gateway: ${NEXT_PUBLIC_API_URL}${NC}"
 
 # Start the development server
 npm run dev

@@ -89,7 +89,7 @@ class ApiGateway {
     // Setup service proxies using axios
     Object.entries(config.services).forEach(([serviceName, serviceConfig]) => {
       serviceConfig.paths.forEach((path) => {
-        console.log(`🔗 Proxying ${path}/* → ${serviceConfig.url}`);
+        console.log(` Proxying ${path}/* → ${serviceConfig.url}`);
 
         // Handle exact path match (e.g., /api/listings)
         this.app.all(path, async (req: Request, res: Response) => {
@@ -122,10 +122,10 @@ class ApiGateway {
   ): Promise<void> {
     try {
       console.log(
-        `📡 Proxying ${req.method} ${req.originalUrl} → ${serviceName}`
+        ` Proxying ${req.method} ${req.originalUrl} → ${serviceName}`
       );
       const fullTargetUrl = `${targetUrl}${req.originalUrl}`;
-      console.log(`📤 Forwarding to: ${fullTargetUrl}`);
+      console.log(` Forwarding to: ${fullTargetUrl}`);
       const axiosConfig: any = {
         method: req.method.toLowerCase(),
         url: fullTargetUrl,
@@ -160,7 +160,7 @@ class ApiGateway {
 
       const response = await axios(axiosConfig);
       
-      console.log(`📥 Response from ${serviceName}: ${response.status}`);
+      console.log(` Response from ${serviceName}: ${response.status}`);
       
       // Forward response headers
       Object.keys(response.headers).forEach(header => {
@@ -215,8 +215,8 @@ class ApiGateway {
     try {
       const server = this.app.listen(config.server.port, config.server.host, () => {
         console.log(' API Gateway started successfully!');
-        console.log(`📍 Gateway URL: http://${config.server.host}:${config.server.port}`);
-        console.log('🔗 Service Routes:');
+        console.log(` Gateway URL: http://${config.server.host}:${config.server.port}`);
+        console.log(' Service Routes:');
         
         Object.entries(config.services).forEach(([name, service]) => {
           service.paths.forEach(path => {
