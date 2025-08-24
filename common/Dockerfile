@@ -5,11 +5,11 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (needed for tsc build)
+RUN npm install
 
-# Install typescript for building
-RUN npm install -g typescript
+# Install rimraf globally (safe cross-platform clean)
+RUN npm install -g typescript rimraf
 
 # Copy source code
 COPY . .
@@ -17,8 +17,8 @@ COPY . .
 # Build the common package
 RUN npm run build
 
-# Create a volume for the build output
+# Volume for build output
 VOLUME ["/app/build"]
 
-# Keep container running (this is a builder container)
+# Keep container running (builder container)
 CMD ["tail", "-f", "/dev/null"]

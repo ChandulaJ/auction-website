@@ -9,7 +9,8 @@ SET CHARACTER SET utf8mb4;
 -- The MYSQL_USER and MYSQL_PASSWORD environment variables handle this
 -- But we ensure the user has the right permissions
 
--- Grant permissions to auction user
+-- Create auction user first, then grant privileges
+CREATE USER IF NOT EXISTS 'auction'@'%' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'auction'@'%';
 FLUSH PRIVILEGES;
 
