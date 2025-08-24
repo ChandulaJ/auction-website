@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+        tier: application
+    spec:
+      containers:
+        - name: payments
+          image: auction-payments:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3104"
+            - name: NODE_ENV
+              value: "development"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: PAYMENTS_MYSQL_URI
+              value: "mysql://root:password@payments-mysql-srv:3306/payments"
+            - name: NATS_URL
+              value: "nats://nats-streaming-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "auction"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: STRIPE_KEY
+          ports:
+            - containerPort: 3104
+          livenessProbe:
+            httpGet:
+              path: /api/payments/health
+              port: 3104
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/payments/health
+              port: 3104
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: payments
+  ports:
+    - name: payments
+      protocol: TCP
+      port: 3104
+      targetPort: 3104

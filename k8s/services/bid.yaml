@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bid
+  template:
+    metadata:
+      labels:
+        app: bid
+        tier: application
+    spec:
+      containers:
+        - name: bid
+          image: auction-bid:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3102"
+            - name: NODE_ENV
+              value: "development"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: BID_MYSQL_URI
+              value: "mysql://root:password@bid-mysql-srv:3306/bid"
+            - name: NATS_URL
+              value: "nats://nats-streaming-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "auction"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - containerPort: 3102
+          livenessProbe:
+            httpGet:
+              path: /api/bid/health
+              port: 3102
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/bid/health
+              port: 3102
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bid-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: bid
+  ports:
+    - name: bid
+      protocol: TCP
+      port: 3102
+      targetPort: 3102

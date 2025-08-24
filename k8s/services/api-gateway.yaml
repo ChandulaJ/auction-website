@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-depl
+  namespace: auction-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+        tier: application
+    spec:
+      containers:
+        - name: api-gateway
+          image: auction-api-gateway:latest
+          imagePullPolicy: Never  # For local Minikube images
+          env:
+            - name: PORT
+              value: "3001"
+            - name: NODE_ENV
+              value: "development"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-srv:3101"
+            - name: BID_SERVICE_URL
+              value: "http://bid-srv:3102"
+            - name: LISTINGS_SERVICE_URL
+              value: "http://listings-srv:3103"
+            - name: PAYMENTS_SERVICE_URL
+              value: "http://payments-srv:3104"
+            - name: PROFILE_SERVICE_URL
+              value: "http://profile-srv:3105"
+            - name: CORS_ORIGIN
+              value: "http://localhost:3000,http://auction.local"
+          ports:
+            - containerPort: 3001
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway-srv
+  namespace: auction-system
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - name: api-gateway
+      protocol: TCP
+      port: 3001
+      targetPort: 3001

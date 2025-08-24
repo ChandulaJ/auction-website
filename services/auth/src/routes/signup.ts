@@ -10,6 +10,7 @@ import { UserCreatedPublisher } from '../events/publishers/user-created-publishe
 import { User } from '../models';
 import { natsWrapper } from '../nats-wrapper';
 import { toHash } from '../utils/to-hash';
+import { authDatabaseCircuitBreaker } from '../utils/database-circuit-breaker';
 
 const router = express.Router();
 
@@ -26,8 +27,10 @@ router.post(
   async (req: Request, res: Response) => {
     const { email, name, password } = req.body;
 
-    const existingUser = await User.findOne({
-      where: { [Op.or]: [{ email }, { name }] },
+    const existingUser = await authDatabaseCircuitBreaker.executeWithRetry(async () => {
+      return await User.findOne({
+        where: { [Op.or]: [{ email }, { name }] },
+      });
     });
 
     if (existingUser) {
@@ -42,11 +45,13 @@ router.post(
       d: 'mm',
     });
 
-    const user = await User.create({
-      name,
-      email,
-      avatar,
-      password: hashedPassword,
+    const user = await authDatabaseCircuitBreaker.executeWithRetry(async () => {
+      return await User.create({
+        name,
+        email,
+        avatar,
+        password: hashedPassword,
+      });
     });
 
     const userJwt = jwt.sign(

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: auction-system
+data:
+  # Database configuration
+  DB_CONNECTION_POOL_SIZE: "10"
+  DB_CONNECTION_TIMEOUT: "30000"
+  
+  # NATS configuration
+  NATS_CLUSTER_ID: "auction"
+  NATS_RECONNECT_TIME_WAIT: "2000"
+  NATS_MAX_RECONNECT_ATTEMPTS: "10"
+  
+  # Redis configuration
+  REDIS_CONNECTION_TIMEOUT: "5000"
+  REDIS_RETRY_DELAY: "1000"
+  
+  # Application configuration
+  LOG_LEVEL: "info"
+  NODE_ENV: "development"
+  
+  # AWS configuration
+  AWS_REGION: "us-east-1"
+  AWS_S3_BUCKET_NAME: "cloud-storage-new123"
+  
+  # CORS configuration
+  CORS_ORIGIN: "http://localhost:3000,http://auction.local"
